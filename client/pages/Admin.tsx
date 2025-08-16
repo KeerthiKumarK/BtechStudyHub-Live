@@ -10,14 +10,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Shield, 
-  Users, 
-  MessageCircle, 
-  FileText, 
-  BarChart3, 
-  Settings, 
+import {
+  Shield,
+  Users,
+  MessageCircle,
+  FileText,
+  BarChart3,
+  Settings,
   Eye,
+  EyeOff,
   Edit,
   Trash2,
   Plus,
