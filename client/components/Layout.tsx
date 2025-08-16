@@ -117,6 +117,18 @@ export default function Layout({ children }: LayoutProps) {
                   </Link>
                 );
               })}
+              {/* Feedback Button */}
+              <Link
+                to="/feedback"
+                className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActivePath("/feedback")
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Feedback</span>
+              </Link>
             </nav>
 
             {/* Auth Section */}
