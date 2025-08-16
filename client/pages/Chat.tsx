@@ -321,12 +321,6 @@ export default function Chat() {
                       </div>
                       <div className="flex items-center space-x-2">
                         <Button size="sm" variant="ghost">
-                          <Phone className="w-4 h-4" />
-                        </Button>
-                        <Button size="sm" variant="ghost">
-                          <Video className="w-4 h-4" />
-                        </Button>
-                        <Button size="sm" variant="ghost">
                           <MoreVertical className="w-4 h-4" />
                         </Button>
                       </div>
