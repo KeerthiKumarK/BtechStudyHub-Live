@@ -590,41 +590,69 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return unsubscribe;
   }, []);
 
-  // Auth state listener
+  // Auth state listener (Firebase)
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      
-      if (user) {
-        // Listen to user profile changes
-        const userProfileRef = ref(database, `users/${user.uid}`);
-        const profileUnsubscribe = onValue(userProfileRef, (snapshot) => {
-          const profileData = snapshot.val();
-          if (profileData) {
-            setUserProfile(profileData);
+    if (useFallbackAuth) {
+      // Use fallback auth listener
+      const unsubscribe = fallbackAuth.onAuthStateChanged(async (fallbackUser) => {
+        if (fallbackUser) {
+          const mockUser: any = {
+            uid: fallbackUser.uid,
+            email: fallbackUser.email,
+            displayName: fallbackUser.displayName,
+            photoURL: null,
+            emailVerified: true
+          };
+          setUser(mockUser);
+
+          const profile = fallbackAuth.getUserProfile(fallbackUser.uid);
+          if (profile) {
+            setUserProfile(profile as any);
           }
-        });
-
-        // Set user online
-        await setUserOnlineStatus(true);
-
-        // Initialize default rooms if needed
-        await initializeDefaultRooms();
-
+        } else {
+          setUser(null);
+          setUserProfile(null);
+        }
         setLoading(false);
+      });
 
-        // Return cleanup function for profile listener
-        return () => {
-          off(userProfileRef, 'value', profileUnsubscribe);
-        };
-      } else {
-        setUserProfile(null);
-        setLoading(false);
-      }
-    });
+      return unsubscribe;
+    } else {
+      // Use Firebase auth listener
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        setUser(user);
 
-    return unsubscribe;
-  }, []);
+        if (user) {
+          // Listen to user profile changes
+          const userProfileRef = ref(database, `users/${user.uid}`);
+          const profileUnsubscribe = onValue(userProfileRef, (snapshot) => {
+            const profileData = snapshot.val();
+            if (profileData) {
+              setUserProfile(profileData);
+            }
+          });
+
+          // Set user online
+          await setUserOnlineStatus(true);
+
+          // Initialize default rooms if needed
+          await initializeDefaultRooms();
+
+          setLoading(false);
+
+          // Return cleanup function for profile listener
+          return () => {
+            off(userProfileRef, 'value', profileUnsubscribe);
+          };
+        } else {
+          setUserProfile(null);
+          setLoading(false);
+        }
+      });
+
+      return unsubscribe;
+    }
+  }, [useFallbackAuth]);
 
   // Set user offline when window is closed
   useEffect(() => {
