@@ -40,8 +40,9 @@ class FallbackAuthSystem {
       }
     }
 
-    // Create a demo user for testing
+    // Create demo user and admin user for testing
     this.createDemoUser();
+    this.createAdminUser();
   }
 
   private createDemoUser() {
