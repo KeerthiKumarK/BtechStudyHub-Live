@@ -106,7 +106,7 @@ export default function Layout({ children }: LayoutProps) {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-1 overflow-x-auto">
-              {navigationItems.slice(0, 8).map((item) => {
+              {navigationItems.slice(0, 9).map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link
