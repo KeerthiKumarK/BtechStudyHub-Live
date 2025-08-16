@@ -76,8 +76,16 @@ export const submitContactForm = async (req: Request, res: Response) => {
       submittedAt: new Date().toLocaleString()
     };
 
-    // Log the submission
-    console.log('Contact form submitted:', submissionData);
+    // Enhanced logging for contact form submissions
+    console.log('\n🔔 NEW CONTACT FORM SUBMISSION 🔔');
+    console.log('==========================================');
+    console.log('📧 TO: kolakeerthikumar@gmail.com');
+    console.log('👤 FROM:', name, `(${email})`);
+    console.log('📝 SUBJECT:', subject);
+    console.log('⏰ TIME:', submissionData.submittedAt);
+    console.log('📄 MESSAGE:');
+    console.log(message);
+    console.log('==========================================\n');
 
     // Send email notification to kolakeerthikumar@gmail.com
     try {
