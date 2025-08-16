@@ -1,10 +1,10 @@
 import React from 'react';
 import { useFirebase } from '@/contexts/FirebaseContext';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, Wifi, WifiOff, Database, DatabaseZap } from 'lucide-react';
+import { AlertTriangle, Wifi, WifiOff, Database, DatabaseZap, Shield } from 'lucide-react';
 
 export default function ConnectionStatus() {
-  const { isOnline, firebaseConnected } = useFirebase();
+  const { isOnline, firebaseConnected, useFallbackAuth } = useFirebase();
 
   // Don't show anything if everything is working
   if (isOnline && firebaseConnected) {
