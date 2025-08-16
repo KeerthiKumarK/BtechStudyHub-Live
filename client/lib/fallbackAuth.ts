@@ -108,6 +108,7 @@ class FallbackAuthSystem {
       password: "Keerthi@28",
     });
 
+    console.log("Fallback auth: Admin user created successfully");
     this.saveToStorage();
   }
 
