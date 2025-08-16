@@ -198,10 +198,12 @@ export default function SignUp() {
       setTimeout(() => navigate('/'), 2000);
     } catch (error: any) {
       console.error('Registration error:', error);
-      setErrors({ 
-        general: error.code === 'auth/email-already-in-use' 
-          ? "This email is already registered. Please use a different email or try logging in." 
-          : "Registration failed. Please try again."
+      setErrors({
+        general: error.message || (
+          error.code === 'auth/email-already-in-use'
+            ? "This email is already registered. Please use a different email or try logging in."
+            : "Registration failed. Please try again."
+        )
       });
     } finally {
       setIsLoading(false);
