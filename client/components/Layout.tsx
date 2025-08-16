@@ -103,7 +103,7 @@ export default function Layout({ children }: LayoutProps) {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-1">
-              {navigationItems.slice(0, 7).map((item) => {
+              {navigationItems.slice(0, 8).map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link
