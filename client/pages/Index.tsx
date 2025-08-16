@@ -162,7 +162,7 @@ export default function Index() {
               </Badge>
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
               Your Complete
               <span className="bg-gradient-education bg-clip-text text-transparent"> BTech Study</span>
               <br />Companion
