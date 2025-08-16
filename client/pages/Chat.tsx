@@ -637,7 +637,7 @@ export default function Chat() {
                     {/* Emoji Picker */}
                     {showEmojiPicker && (
                       <div className="mb-4 p-3 bg-muted rounded-lg">
-                        <div className="grid grid-cols-6 gap-2">
+                        <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-2">
                           {popularEmojis.map((emoji) => (
                             <Button
                               key={emoji}
