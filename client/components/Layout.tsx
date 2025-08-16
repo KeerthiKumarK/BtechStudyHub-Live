@@ -43,6 +43,7 @@ const navigationItems = [
 
 const secondaryItems = [
   { path: "/portfolio", label: "Portfolio", icon: Briefcase },
+  { path: "/games", label: "Games", icon: Gamepad2 },
   { path: "/about", label: "About", icon: Info },
   { path: "/feedback", label: "Feedback", icon: MessageCircle },
   { path: "/contact", label: "Contact", icon: Phone },
