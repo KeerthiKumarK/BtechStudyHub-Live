@@ -193,6 +193,27 @@ export default function Chat() {
     }
   };
 
+  const handleEmojiSelect = (emoji: string) => {
+    setNewMessage(prev => prev + emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const handleFileAttachment = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // For now, just show file name in message
+      // In a real implementation, you would upload the file
+      setNewMessage(prev => prev + ` [File: ${file.name}]`);
+    }
+  };
+
+  // Popular emojis for quick access
+  const popularEmojis = ['😊', '😂', '❤️', '👍', '👎', '🎉', '🔥', '💯', '👀', '🤔', '😎', '🙏'];
+
   const filteredMessages = messages.filter(msg =>
     msg.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
     msg.username.toLowerCase().includes(searchTerm.toLowerCase())
