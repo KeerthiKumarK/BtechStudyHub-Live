@@ -334,7 +334,7 @@ export default function Chat() {
                   </div>
 
                   {/* Messages Area */}
-                  <ScrollArea className="flex-1 p-4">
+                  <ScrollArea className="flex-1 p-4 max-h-[60vh] overflow-y-auto">
                     <div className="space-y-4">
                       {filteredMessages.map((message) => (
                         <div
