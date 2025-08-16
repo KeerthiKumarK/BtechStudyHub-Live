@@ -81,6 +81,15 @@ const features = [
     color: "text-indigo-600",
     bgColor: "bg-indigo-50",
     stats: "Live Opportunities"
+  },
+  {
+    icon: User,
+    title: "Portfolio & Resume",
+    description: "Professional templates and tools to create stunning portfolios and ATS-friendly resumes",
+    link: "/portfolio",
+    color: "text-teal-600",
+    bgColor: "bg-teal-50",
+    stats: "20+ Templates"
   }
 ];
 
