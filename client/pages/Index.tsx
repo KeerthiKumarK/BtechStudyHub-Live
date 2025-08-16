@@ -298,6 +298,91 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Games Section */}
+      <section className="py-20 bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-slate-800 dark:to-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Take a Break with Interactive Games
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Refresh your mind and enhance cognitive skills with brain-stimulating games designed for students
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <Card className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-purple-300">
+              <CardContent className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                  <div className="text-center md:text-left">
+                    <div className="flex items-center justify-center md:justify-start space-x-3 mb-6">
+                      <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full flex items-center justify-center">
+                        <Gamepad2 className="w-8 h-8 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-foreground">Interactive Games</h3>
+                        <p className="text-muted-foreground">Brain training & relaxation</p>
+                      </div>
+                    </div>
+
+                    <p className="text-muted-foreground mb-6 leading-relaxed">
+                      Challenge yourself with strategic games like Chess, solve puzzles, and take productive breaks
+                      that actually enhance your cognitive abilities and problem-solving skills.
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                      <div className="text-center p-3 bg-white/50 dark:bg-slate-800/50 rounded-lg">
+                        <Brain className="w-6 h-6 text-purple-600 mx-auto mb-2" />
+                        <p className="font-medium text-sm">Cognitive Enhancement</p>
+                      </div>
+                      <div className="text-center p-3 bg-white/50 dark:bg-slate-800/50 rounded-lg">
+                        <Target className="w-6 h-6 text-indigo-600 mx-auto mb-2" />
+                        <p className="font-medium text-sm">Strategic Thinking</p>
+                      </div>
+                      <div className="text-center p-3 bg-white/50 dark:bg-slate-800/50 rounded-lg">
+                        <RefreshCw className="w-6 h-6 text-purple-600 mx-auto mb-2" />
+                        <p className="font-medium text-sm">Stress Relief</p>
+                      </div>
+                    </div>
+
+                    <Button asChild size="lg" className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700">
+                      <Link to="/games">
+                        <PlayCircle className="w-5 h-5 mr-2" />
+                        Start Playing Games
+                      </Link>
+                    </Button>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="relative">
+                      <div className="text-8xl md:text-9xl">♔</div>
+                      <div className="absolute -top-2 -right-2">
+                        <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full flex items-center justify-center">
+                          <Gamepad2 className="w-4 h-4 text-white" />
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-4">
+                      Featured: Chess Game
+                    </p>
+                    <div className="flex justify-center space-x-4 mt-4 text-sm">
+                      <div className="flex items-center space-x-1">
+                        <Users className="w-4 h-4 text-muted-foreground" />
+                        <span>1-2 Players</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Clock className="w-4 h-4 text-muted-foreground" />
+                        <span>Strategic</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Benefits Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
