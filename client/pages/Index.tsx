@@ -25,7 +25,10 @@ import {
   Zap,
   Globe,
   Shield,
-  User
+  User,
+  Gamepad2,
+  Brain,
+  RefreshCw
 } from "lucide-react";
 
 const features = [
