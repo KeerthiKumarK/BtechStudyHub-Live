@@ -81,51 +81,74 @@ export const submitContactForm = async (req: Request, res: Response) => {
 
     // Send email notification to kolakeerthikumar@gmail.com
     try {
-      if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-        const transporter = createEmailTransporter();
-        
-        const mailOptions = {
-          from: process.env.EMAIL_USER,
-          to: 'kolakeerthikumar@gmail.com',
-          subject: `Contact Form: ${subject}`,
-          html: `
-            <h2>New Contact Form Submission - BTech Study Hub</h2>
-            <p>You have received a new message through the contact form:</p>
-            
-            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0;">
-              <h3>Contact Details:</h3>
-              <p><strong>Name:</strong> ${name}</p>
-              <p><strong>Email:</strong> ${email}</p>
-              <p><strong>Subject:</strong> ${subject}</p>
-              <p><strong>Submitted On:</strong> ${submissionData.submittedAt}</p>
-            </div>
-            
-            <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 15px 0;">
-              <h3>Message:</h3>
-              <p style="white-space: pre-wrap;">${message}</p>
-            </div>
-            
-            <p style="margin-top: 20px; color: #666;">
-              You can reply directly to this email to respond to ${name}.
-            </p>
-            
-            <hr style="margin: 20px 0;">
-            <p style="color: #888; font-size: 12px;">
-              This message was sent through the BTech Study Hub contact form.<br>
-              Please do not reply to this email directly - use the sender's email address: ${email}
-            </p>
-          `,
-          replyTo: email // Allow direct reply to the sender
-        };
+      console.log('Attempting to send email notification...');
+      const transporter = createEmailTransporter();
 
-        await transporter.sendMail(mailOptions);
-        console.log('Contact form email notification sent successfully');
-      } else {
-        console.log('Email credentials not configured, skipping email notification');
-      }
+      // Verify SMTP connection
+      await transporter.verify();
+      console.log('SMTP connection verified successfully');
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER || 'noreply@btechstudyhub.com',
+        to: 'kolakeerthikumar@gmail.com',
+        subject: `Contact Form: ${subject}`,
+        html: `
+          <h2>New Contact Form Submission - BTech Study Hub</h2>
+          <p>You have received a new message through the contact form:</p>
+
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0;">
+            <h3>Contact Details:</h3>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Subject:</strong> ${subject}</p>
+            <p><strong>Submitted On:</strong> ${submissionData.submittedAt}</p>
+          </div>
+
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 15px 0;">
+            <h3>Message:</h3>
+            <p style="white-space: pre-wrap;">${message}</p>
+          </div>
+
+          <p style="margin-top: 20px; color: #666;">
+            You can reply directly to this email to respond to ${name}.
+          </p>
+
+          <hr style="margin: 20px 0;">
+          <p style="color: #888; font-size: 12px;">
+            This message was sent through the BTech Study Hub contact form.<br>
+            Reply to: ${email}
+          </p>
+        `,
+        replyTo: email // Allow direct reply to the sender
+      };
+
+      const result = await transporter.sendMail(mailOptions);
+      console.log('Contact form email notification sent successfully:', result.messageId);
+
+      // Also log the submission to console as backup
+      console.log('Contact form submission details:', {
+        to: 'kolakeerthikumar@gmail.com',
+        from: email,
+        name: name,
+        subject: subject,
+        message: message,
+        timestamp: submissionData.submittedAt
+      });
+
     } catch (emailError) {
       console.error('Error sending email notification:', emailError);
-      // Don't fail the request if email fails, but log the error
+
+      // Fallback: Log the contact details clearly so you can manually see submissions
+      console.log('=== CONTACT FORM SUBMISSION (Email Failed) ===');
+      console.log('TO: kolakeerthikumar@gmail.com');
+      console.log('FROM:', email);
+      console.log('NAME:', name);
+      console.log('SUBJECT:', subject);
+      console.log('MESSAGE:', message);
+      console.log('TIME:', submissionData.submittedAt);
+      console.log('============================================');
+
+      // Don't fail the request if email fails, but ensure logging
     }
 
     res.status(201).json({
