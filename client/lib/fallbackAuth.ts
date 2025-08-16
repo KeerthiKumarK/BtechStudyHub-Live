@@ -256,3 +256,9 @@ class FallbackAuthSystem {
 }
 
 export const fallbackAuth = new FallbackAuthSystem();
+
+// Make fallback auth available in console for debugging
+if (typeof window !== 'undefined') {
+  (window as any).fallbackAuth = fallbackAuth;
+  console.log("Fallback auth system available at window.fallbackAuth");
+}
