@@ -57,7 +57,7 @@ interface AdminActivity {
 
 export default function Admin() {
   const navigate = useNavigate();
-  const { user, userProfile } = useFirebase();
+  const { user, userProfile, signIn } = useFirebase();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [loginError, setLoginError] = useState("");
@@ -135,18 +135,28 @@ export default function Admin() {
     // Check if current user is admin
     if (user?.email === ADMIN_EMAIL) {
       setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
     }
   }, [user]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
 
+    // Verify the entered credentials match the admin credentials
     if (
       loginData.email === ADMIN_EMAIL &&
       loginData.password === ADMIN_PASSWORD
     ) {
-      setIsAuthenticated(true);
+      try {
+        // Try to sign in the admin user
+        await signIn(ADMIN_EMAIL, ADMIN_PASSWORD);
+        // The useEffect will handle setting isAuthenticated when user changes
+      } catch (error: any) {
+        console.error("Admin login error:", error);
+        setLoginError("Failed to authenticate admin user. Please try again.");
+      }
     } else {
       setLoginError("Invalid admin credentials");
     }
@@ -205,6 +215,11 @@ export default function Admin() {
               <p className="text-muted-foreground">
                 Please enter admin credentials to continue
               </p>
+              <div className="mt-4 p-3 bg-muted rounded-lg text-sm">
+                <p className="font-medium mb-1">Admin Credentials:</p>
+                <p>Email: kolakeerthikumar@gmail.com</p>
+                <p>Password: Keerthi@28</p>
+              </div>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-4">

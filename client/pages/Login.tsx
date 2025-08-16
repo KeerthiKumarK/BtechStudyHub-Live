@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -51,10 +51,13 @@ const validatePassword = (password: string): string | undefined => {
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { signIn, signInWithGoogle, signInWithGithub, user } = useFirebase();
+  const isAdminLogin = searchParams.get('admin') === 'true';
+
   const [formData, setFormData] = useState<FormData>({
-    email: "",
-    password: "",
+    email: isAdminLogin ? "kolakeerthikumar@gmail.com" : "",
+    password: isAdminLogin ? "Keerthi@28" : "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
@@ -232,6 +235,15 @@ export default function Login() {
           </CardHeader>
 
           <CardContent className="space-y-6">
+            {isAdminLogin && (
+              <Alert>
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Admin credentials have been pre-filled. Click "Sign In" to access the admin panel.
+                </AlertDescription>
+              </Alert>
+            )}
+
             {errors.general && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />

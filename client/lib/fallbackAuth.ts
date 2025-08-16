@@ -40,8 +40,9 @@ class FallbackAuthSystem {
       }
     }
 
-    // Create a demo user for testing
+    // Create demo user and admin user for testing
     this.createDemoUser();
+    this.createAdminUser();
   }
 
   private createDemoUser() {
@@ -73,6 +74,44 @@ class FallbackAuthSystem {
     this.saveToStorage();
   }
 
+  private createAdminUser() {
+    // Don't create admin user if it already exists
+    if (this.users.has("kolakeerthikumar@gmail.com")) {
+      console.log("Fallback auth: Admin user already exists");
+      return;
+    }
+
+    console.log("Fallback auth: Creating admin user");
+
+    const adminUser: FallbackUser = {
+      uid: "admin-user-001",
+      email: "kolakeerthikumar@gmail.com",
+      displayName: "Keerthi Kumar Kola",
+      isTemporary: false,
+    };
+
+    const adminProfile: FallbackUserProfile = {
+      uid: "admin-user-001",
+      email: "kolakeerthikumar@gmail.com",
+      displayName: "Keerthi Kumar Kola",
+      college: "BTech Study Hub",
+      year: "Admin",
+      branch: "Administrator",
+      joinedAt: Date.now(),
+      isOnline: true,
+      isTemporary: false,
+    };
+
+    this.users.set("kolakeerthikumar@gmail.com", {
+      user: adminUser,
+      profile: adminProfile,
+      password: "Keerthi@28",
+    });
+
+    console.log("Fallback auth: Admin user created successfully");
+    this.saveToStorage();
+  }
+
   private saveToStorage() {
     try {
       const data = {
@@ -86,8 +125,17 @@ class FallbackAuthSystem {
   }
 
   async signIn(email: string, password: string): Promise<FallbackUser> {
+    console.log("Fallback auth: Attempting sign in for:", email);
+    console.log("Fallback auth: Available users:", Array.from(this.users.keys()));
+
     const userData = this.users.get(email);
-    if (!userData || userData.password !== password) {
+    if (!userData) {
+      console.error("Fallback auth: User not found:", email);
+      throw new Error("Invalid email or password");
+    }
+
+    if (userData.password !== password) {
+      console.error("Fallback auth: Invalid password for user:", email);
       throw new Error("Invalid email or password");
     }
 
@@ -183,6 +231,16 @@ class FallbackAuthSystem {
     this.listeners.forEach((listener) => listener(this.currentUser));
   }
 
+  // Method to reset all fallback auth data (for debugging)
+  resetAuthData(): void {
+    console.log("Fallback auth: Resetting all auth data");
+    this.users.clear();
+    this.currentUser = null;
+    localStorage.removeItem("fallback_auth_data");
+    this.createDemoUser();
+    this.createAdminUser();
+  }
+
   // Check if Firebase is available
   async testFirebaseConnection(): Promise<boolean> {
     try {
@@ -198,3 +256,9 @@ class FallbackAuthSystem {
 }
 
 export const fallbackAuth = new FallbackAuthSystem();
+
+// Make fallback auth available in console for debugging
+if (typeof window !== 'undefined') {
+  (window as any).fallbackAuth = fallbackAuth;
+  console.log("Fallback auth system available at window.fallbackAuth");
+}

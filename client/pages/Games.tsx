@@ -26,15 +26,18 @@ import {
   RefreshCw,
   Home,
   Settings,
+  AlertTriangle,
+  CheckCircle,
 } from "lucide-react";
-
-// Chess piece types
-type PieceType = "king" | "queen" | "rook" | "bishop" | "knight" | "pawn";
-type PieceColor = "white" | "black";
-type Square = {
-  piece: PieceType | null;
-  color: PieceColor | null;
-} | null;
+import {
+  GameState,
+  createInitialGameState,
+  generatePossibleMoves,
+  isValidMove,
+  applyMove,
+  type PieceColor,
+  type ChessPiece,
+} from "@/lib/chessLogic";
 
 // Chess piece Unicode symbols
 const pieceSymbols = {
@@ -55,48 +58,6 @@ const pieceSymbols = {
     pawn: "♟",
   },
 };
-
-// Initial chess board setup
-const initialBoard: Square[][] = [
-  [
-    { piece: "rook", color: "black" },
-    { piece: "knight", color: "black" },
-    { piece: "bishop", color: "black" },
-    { piece: "queen", color: "black" },
-    { piece: "king", color: "black" },
-    { piece: "bishop", color: "black" },
-    { piece: "knight", color: "black" },
-    { piece: "rook", color: "black" },
-  ],
-  Array(8)
-    .fill(null)
-    .map(() => ({ piece: "pawn", color: "black" })),
-  Array(8)
-    .fill(null)
-    .map(() => null),
-  Array(8)
-    .fill(null)
-    .map(() => null),
-  Array(8)
-    .fill(null)
-    .map(() => null),
-  Array(8)
-    .fill(null)
-    .map(() => null),
-  Array(8)
-    .fill(null)
-    .map(() => ({ piece: "pawn", color: "white" })),
-  [
-    { piece: "rook", color: "white" },
-    { piece: "knight", color: "white" },
-    { piece: "bishop", color: "white" },
-    { piece: "queen", color: "white" },
-    { piece: "king", color: "white" },
-    { piece: "bishop", color: "white" },
-    { piece: "knight", color: "white" },
-    { piece: "rook", color: "white" },
-  ],
-];
 
 interface Game {
   id: string;
@@ -156,52 +117,86 @@ const availableGames: Game[] = [
 
 export default function Games() {
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
-  const [board, setBoard] = useState<Square[][]>(initialBoard);
-  const [currentPlayer, setCurrentPlayer] = useState<PieceColor>("white");
-  const [selectedSquare, setSelectedSquare] = useState<[number, number] | null>(
-    null,
-  );
+  const [gameState, setGameState] = useState<GameState>(createInitialGameState());
+  const [selectedSquare, setSelectedSquare] = useState<[number, number] | null>(null);
+  const [validMoves, setValidMoves] = useState<{row: number, col: number}[]>([]);
   const [gameStats, setGameStats] = useState({
     gamesPlayed: 15,
     wins: 8,
     draws: 3,
     currentStreak: 2,
   });
+  const [showGameOverDialog, setShowGameOverDialog] = useState(false);
 
   const resetChessBoard = () => {
-    setBoard(
-      initialBoard.map((row) =>
-        row.map((square) => (square ? { ...square } : null)),
-      ),
-    );
-    setCurrentPlayer("white");
+    setGameState(createInitialGameState());
     setSelectedSquare(null);
+    setValidMoves([]);
+    setShowGameOverDialog(false);
   };
 
+  // Show game over dialog when game ends
+  useEffect(() => {
+    if (gameState.isCheckmate || gameState.isStalemate) {
+      setShowGameOverDialog(true);
+    }
+  }, [gameState.isCheckmate, gameState.isStalemate]);
+
   const handleSquareClick = (row: number, col: number) => {
+    // Don't allow moves if game is over
+    if (gameState.isCheckmate || gameState.isStalemate) {
+      return;
+    }
+
     if (selectedSquare) {
       const [selectedRow, selectedCol] = selectedSquare;
       if (selectedRow === row && selectedCol === col) {
         // Deselect if clicking the same square
         setSelectedSquare(null);
+        setValidMoves([]);
         return;
       }
 
-      // Simple move logic (basic implementation)
-      const piece = board[selectedRow][selectedCol];
-      if (piece && piece.color === currentPlayer) {
-        const newBoard = board.map((row) => [...row]);
-        newBoard[row][col] = piece;
-        newBoard[selectedRow][selectedCol] = null;
-        setBoard(newBoard);
-        setCurrentPlayer(currentPlayer === "white" ? "black" : "white");
+      // Try to make a move
+      if (isValidMove(gameState, selectedRow, selectedCol, row, col)) {
+        const move = {
+          from: { row: selectedRow, col: selectedCol },
+          to: { row, col },
+          piece: gameState.board[selectedRow][selectedCol]!,
+          capturedPiece: gameState.board[row][col] || undefined,
+        };
+
+        const newGameState = applyMove(gameState, move);
+        setGameState(newGameState);
+
+        // Update game stats if game ended
+        if (newGameState.isCheckmate) {
+          setGameStats(prev => ({
+            ...prev,
+            gamesPlayed: prev.gamesPlayed + 1,
+            wins: newGameState.winner === "white" ? prev.wins + 1 : prev.wins,
+            currentStreak: newGameState.winner === "white" ? prev.currentStreak + 1 : 0,
+          }));
+        } else if (newGameState.isStalemate) {
+          setGameStats(prev => ({
+            ...prev,
+            gamesPlayed: prev.gamesPlayed + 1,
+            draws: prev.draws + 1,
+            currentStreak: 0,
+          }));
+        }
       }
+
       setSelectedSquare(null);
+      setValidMoves([]);
     } else {
       // Select square if it has a piece of the current player
-      const piece = board[row][col];
-      if (piece && piece.color === currentPlayer) {
+      const piece = gameState.board[row][col];
+      if (piece && piece.color === gameState.currentPlayer) {
         setSelectedSquare([row, col]);
+        // Highlight valid moves
+        const moves = generatePossibleMoves(gameState.board, row, col, gameState);
+        setValidMoves(moves.map(move => ({ row: move.to.row, col: move.to.col })));
       }
     }
   };
@@ -292,17 +287,25 @@ export default function Games() {
                       <div className="text-3xl">♔</div>
                       <div>
                         <CardTitle className="text-2xl">Chess Game</CardTitle>
-                        <div className="text-muted-foreground">
-                          Current Player:{" "}
-                          <Badge
-                            variant={
-                              currentPlayer === "white"
-                                ? "default"
-                                : "secondary"
-                            }
-                          >
-                            {currentPlayer === "white" ? "White" : "Black"}
-                          </Badge>
+                        <div className="flex items-center space-x-4">
+                          <div className="text-muted-foreground">
+                            Current Player:{" "}
+                            <Badge
+                              variant={
+                                gameState.currentPlayer === "white"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                            >
+                              {gameState.currentPlayer === "white" ? "White" : "Black"}
+                            </Badge>
+                          </div>
+                          {gameState.isCheck && (
+                            <Badge variant="destructive" className="flex items-center space-x-1">
+                              <AlertTriangle className="w-3 h-3" />
+                              <span>Check!</span>
+                            </Badge>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -331,31 +334,38 @@ export default function Games() {
                 <CardContent>
                   <div className="flex justify-center overflow-x-auto">
                     <div className="grid grid-cols-8 gap-0 border-2 border-gray-400 bg-white min-w-fit">
-                      {board.map((row, rowIndex) =>
+                      {gameState.board.map((row, rowIndex) =>
                         row.map((square, colIndex) => {
                           const isLight = (rowIndex + colIndex) % 2 === 0;
                           const isSelected =
                             selectedSquare &&
                             selectedSquare[0] === rowIndex &&
                             selectedSquare[1] === colIndex;
+                          const isValidMove = validMoves.some(move =>
+                            move.row === rowIndex && move.col === colIndex
+                          );
 
                           return (
                             <div
                               key={`${rowIndex}-${colIndex}`}
                               className={`
-                                w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 flex items-center justify-center cursor-pointer text-lg sm:text-2xl md:text-4xl transition-colors
+                                w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 flex items-center justify-center cursor-pointer text-lg sm:text-2xl md:text-4xl transition-all
                                 ${isLight ? "bg-amber-100" : "bg-amber-800"}
                                 ${isSelected ? "ring-2 sm:ring-4 ring-blue-500" : ""}
-                                hover:opacity-80
+                                ${isValidMove ? "bg-green-200 ring-1 ring-green-400" : ""}
+                                ${gameState.isCheckmate || gameState.isStalemate ? "opacity-60" : "hover:opacity-80"}
                               `}
                               onClick={() =>
                                 handleSquareClick(rowIndex, colIndex)
                               }
                             >
-                              {square && square.piece && square.color && (
+                              {square && (
                                 <span className="select-none">
-                                  {pieceSymbols[square.color][square.piece]}
+                                  {pieceSymbols[square.color][square.type]}
                                 </span>
+                              )}
+                              {isValidMove && !square && (
+                                <div className="w-3 h-3 bg-green-500 rounded-full opacity-60" />
                               )}
                             </div>
                           );
@@ -366,8 +376,9 @@ export default function Games() {
 
                   <div className="mt-6 text-center">
                     <p className="text-muted-foreground mb-4">
-                      Click on a piece to select it, then click on a destination
-                      square to move.
+                      {gameState.isCheckmate || gameState.isStalemate
+                        ? "Game Over! Click reset to play again."
+                        : "Click on a piece to select it, then click on a destination square to move."}
                     </p>
                     <div className="flex justify-center space-x-4 text-sm">
                       <div className="flex items-center space-x-2">
@@ -378,8 +389,47 @@ export default function Games() {
                         <div className="w-4 h-4 bg-amber-800 border"></div>
                         <span>Dark Squares</span>
                       </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-green-200 border border-green-400"></div>
+                        <span>Valid Moves</span>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Game Over Dialog */}
+                  <Dialog open={showGameOverDialog} onOpenChange={setShowGameOverDialog}>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center space-x-2">
+                          {gameState.isCheckmate ? (
+                            <>
+                              <Trophy className="w-6 h-6 text-yellow-500" />
+                              <span>Checkmate!</span>
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="w-6 h-6 text-blue-500" />
+                              <span>Stalemate!</span>
+                            </>
+                          )}
+                        </DialogTitle>
+                        <DialogDescription>
+                          {gameState.isCheckmate
+                            ? `${gameState.winner === "white" ? "White" : "Black"} wins the game!`
+                            : "The game ends in a draw."}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="flex justify-center space-x-2 mt-4">
+                        <Button onClick={resetChessBoard} className="bg-gradient-education text-white">
+                          <RotateCcw className="w-4 h-4 mr-2" />
+                          New Game
+                        </Button>
+                        <Button variant="outline" onClick={() => setShowGameOverDialog(false)}>
+                          Close
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </CardContent>
               </Card>
             </div>
