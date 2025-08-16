@@ -824,53 +824,75 @@ export default function Chat() {
                     )}
 
                     {joinedRooms.includes(selectedRoom.id) ? (
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={handleFileAttachment}
-                          title="Attach file"
-                        >
-                          <Paperclip className="w-4 h-4" />
-                        </Button>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          className="hidden"
-                          onChange={handleFileSelect}
-                          accept="image/*,application/pdf,.doc,.docx"
-                        />
-                        <div className="flex-1 relative">
-                          <Input
-                            placeholder="Type a message..."
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            onKeyPress={(e) => {
-                              if (e.key === "Enter" && !e.shiftKey) {
-                                e.preventDefault();
-                                handleSendMessage();
-                              }
-                            }}
-                            className="pr-12"
-                          />
+                      <div className="space-y-2">
+                        {/* Selected File Preview */}
+                        {selectedFile && (
+                          <div className="flex items-center space-x-2 p-2 bg-muted rounded">
+                            <Paperclip className="w-4 h-4" />
+                            <span className="text-sm flex-1">{selectedFile.name}</span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setSelectedFile(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
+
+                        <div className="flex items-center space-x-2">
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="absolute right-1 top-1/2 transform -translate-y-1/2"
-                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                            title="Add emoji"
+                            onClick={handleFileAttachment}
+                            title="Attach file"
+                            disabled={isUploading}
                           >
-                            <Smile className="w-4 h-4" />
+                            <Paperclip className="w-4 h-4" />
+                          </Button>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            className="hidden"
+                            onChange={handleFileSelect}
+                            accept="image/*,application/pdf,.doc,.docx"
+                          />
+                          <div className="flex-1 relative">
+                            <Input
+                              placeholder="Type a message..."
+                              value={newMessage}
+                              onChange={(e) => setNewMessage(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter" && !e.shiftKey) {
+                                  e.preventDefault();
+                                  handleSendMessage();
+                                }
+                              }}
+                              className="pr-12"
+                            />
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="absolute right-1 top-1/2 transform -translate-y-1/2"
+                              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                              title="Add emoji"
+                            >
+                              <Smile className="w-4 h-4" />
+                            </Button>
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={handleSendMessage}
+                            disabled={(!newMessage.trim() && !selectedFile) || isUploading}
+                            className="bg-gradient-education text-white"
+                          >
+                            {isUploading ? (
+                              <RefreshCw className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Send className="w-4 h-4" />
+                            )}
                           </Button>
                         </div>
-                        <Button
-                          size="sm"
-                          onClick={handleSendMessage}
-                          disabled={!newMessage.trim()}
-                          className="bg-gradient-education text-white"
-                        >
-                          <Send className="w-4 h-4" />
-                        </Button>
                       </div>
                     ) : (
                       <div className="text-center py-4">
