@@ -200,11 +200,11 @@ const Profile: React.FC = () => {
             </CardHeader>
             <CardContent className="text-center">
               <div className="relative inline-block mb-6">
-                <Avatar className="w-32 h-32 mx-auto" key={userProfile?.profileImageURL || 'default'}>
+                <Avatar className="w-32 h-32 mx-auto" key={`${userProfile?.profileImageURL}-${profileImageKey}`}>
                   <AvatarImage
                     src={userProfile?.profileImageURL || userProfile?.photoURL}
                     alt={userProfile?.displayName || 'Profile'}
-                    key={userProfile?.profileImageURL || 'fallback'}
+                    key={`img-${userProfile?.profileImageURL}-${profileImageKey}`}
                   />
                   <AvatarFallback className="text-2xl bg-blue-100 text-blue-600">
                     {getInitials(userProfile?.displayName || 'User')}
