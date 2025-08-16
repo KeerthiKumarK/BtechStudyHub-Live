@@ -183,9 +183,27 @@ export default function Chat() {
     }
 
     try {
-      // This would typically involve creating a new room in Firebase
-      // For now, we'll just reset the form and close the dialog
-      console.log('Creating group:', groupFormData);
+      // Create a new room object
+      const newRoom: ChatRoom = {
+        id: Date.now().toString(),
+        name: groupFormData.name,
+        description: groupFormData.description,
+        type: groupFormData.type,
+        memberCount: 1,
+        lastMessage: {
+          content: `Welcome to ${groupFormData.name}!`,
+          timestamp: Date.now(),
+          username: userProfile?.displayName || 'System'
+        }
+      };
+
+      // Add to the chat rooms list immediately
+      setChatRooms(prev => [newRoom, ...prev]);
+
+      // Set as selected room
+      setSelectedRoom(newRoom);
+
+      // Reset form and close dialog
       setGroupFormData({ name: "", description: "", type: "general" });
       setShowCreateGroup(false);
     } catch (error) {
