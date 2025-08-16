@@ -88,6 +88,12 @@ const Profile: React.FC = () => {
     try {
       await uploadProfileImage(file);
       setMessage({ type: 'success', text: 'Profile image updated successfully!' });
+      // Force immediate re-render of the profile image
+      setProfileImageKey(Date.now());
+      // Clear the file input to allow re-uploading the same file
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } catch (error) {
       console.error('Error uploading image:', error);
       setMessage({ type: 'error', text: 'Failed to upload image. Please try again.' });
