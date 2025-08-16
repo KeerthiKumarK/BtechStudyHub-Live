@@ -57,7 +57,7 @@ interface AdminActivity {
 
 export default function Admin() {
   const navigate = useNavigate();
-  const { user, userProfile } = useFirebase();
+  const { user, userProfile, signIn } = useFirebase();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [loginError, setLoginError] = useState("");
