@@ -369,18 +369,23 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const uploadProfileImage = async (file: File): Promise<string> => {
     if (!user) throw new Error('User not authenticated');
 
-    // For now, we'll use a placeholder URL since we don't have Firebase Storage configured
-    // In a real implementation, you would upload to Firebase Storage
-    const timestamp = Date.now();
-    const userName = user.displayName || userProfile?.displayName || user.email?.split('@')[0] || 'User';
+    // Create a local URL for the uploaded file to display immediately
+    const localImageURL = URL.createObjectURL(file);
 
-    // Create a unique placeholder URL with timestamp to ensure it changes
-    const placeholderURL = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&color=fff&size=200&_t=${timestamp}`;
+    // For a real implementation, you would upload to Firebase Storage
+    // For now, we'll store the local URL and simulate the upload
+    const timestamp = Date.now();
+
+    // Simulate upload delay
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     // Update user profile with new image URL
-    await updateUserProfile({ profileImageURL: placeholderURL });
+    await updateUserProfile({
+      profileImageURL: localImageURL,
+      lastImageUpdate: timestamp
+    });
 
-    return placeholderURL;
+    return localImageURL;
   };
 
   // Feedback functions
