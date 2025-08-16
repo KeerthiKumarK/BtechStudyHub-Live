@@ -24,13 +24,25 @@ export default function ConnectionStatus() {
         </Alert>
       )}
 
-      {isOnline && !firebaseConnected && (
+      {isOnline && !firebaseConnected && !useFallbackAuth && (
         <Alert className="mb-2 border-orange-200 bg-orange-50">
           <Database className="w-4 h-4 text-orange-600" />
           <AlertDescription className="text-orange-800">
             <strong>Database Connection Issue</strong>
             <br />
             Having trouble connecting to our servers. Some features may not work properly.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {useFallbackAuth && (
+        <Alert className="mb-2 border-blue-200 bg-blue-50">
+          <Shield className="w-4 h-4 text-blue-600" />
+          <AlertDescription className="text-blue-800">
+            <strong>Demo Mode Active</strong>
+            <br />
+            Using offline mode with demo account. You can try: <br />
+            Email: <code>demo@example.com</code> Password: <code>demo123</code>
           </AlertDescription>
         </Alert>
       )}
