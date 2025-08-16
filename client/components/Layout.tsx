@@ -204,7 +204,7 @@ export default function Layout({ children }: LayoutProps) {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden border-t border-border bg-background">
+          <div className="lg:hidden border-t border-border bg-background dark:bg-slate-900">
             <div className="px-4 py-4 space-y-2">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
