@@ -246,14 +246,14 @@ export default function Games() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex space-x-2">
-                      <Button variant="outline" onClick={resetChessBoard}>
+                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                      <Button variant="outline" onClick={resetChessBoard} size="sm" className="w-full sm:w-auto">
                         <RotateCcw className="w-4 h-4 mr-2" />
-                        Reset Game
+                        Reset
                       </Button>
-                      <Button variant="outline" onClick={() => setSelectedGame(null)}>
+                      <Button variant="outline" onClick={() => setSelectedGame(null)} size="sm" className="w-full sm:w-auto">
                         <Home className="w-4 h-4 mr-2" />
-                        Back to Games
+                        Back
                       </Button>
                     </div>
                   </div>
