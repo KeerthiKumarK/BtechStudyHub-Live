@@ -224,11 +224,9 @@ export default function SignUp() {
       setTimeout(() => navigate('/'), 1500);
     } catch (error: any) {
       console.error('Social signup error:', error);
-      if (error.message && error.message.includes('not available in this environment')) {
-        setErrors({ general: error.message });
-      } else {
-        setErrors({ general: "Social signup failed. Please try again or use email/password registration." });
-      }
+      setErrors({
+        general: error.message || "Social signup failed. Please try again or use email/password registration."
+      });
     } finally {
       setIsLoading(false);
     }
