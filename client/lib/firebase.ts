@@ -13,8 +13,29 @@ const firebaseConfig = {
   appId: "1:512504024293:web:02636f482be10065d8580c"
 };
 
+// Validate Firebase configuration
+const validateFirebaseConfig = () => {
+  const requiredFields = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+  const missingFields = requiredFields.filter(field => !firebaseConfig[field as keyof typeof firebaseConfig]);
+
+  if (missingFields.length > 0) {
+    console.error('Missing Firebase configuration fields:', missingFields);
+    throw new Error(`Firebase configuration incomplete. Missing: ${missingFields.join(', ')}`);
+  }
+};
+
+// Validate configuration before initializing
+validateFirebaseConfig();
+
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+let app;
+try {
+  app = initializeApp(firebaseConfig);
+  console.log('Firebase initialized successfully');
+} catch (error) {
+  console.error('Firebase initialization failed:', error);
+  throw new Error('Failed to initialize Firebase. Please check your configuration.');
+}
 
 // Initialize Firebase services
 export const auth = getAuth(app);
