@@ -20,20 +20,23 @@ export interface FallbackUserProfile {
 }
 
 class FallbackAuthSystem {
-  private users: Map<string, { user: FallbackUser; profile: FallbackUserProfile; password: string }> = new Map();
+  private users: Map<
+    string,
+    { user: FallbackUser; profile: FallbackUserProfile; password: string }
+  > = new Map();
   private currentUser: FallbackUser | null = null;
   private listeners: Array<(user: FallbackUser | null) => void> = [];
 
   constructor() {
     // Load from localStorage if available
-    const stored = localStorage.getItem('fallback_auth_data');
+    const stored = localStorage.getItem("fallback_auth_data");
     if (stored) {
       try {
         const data = JSON.parse(stored);
         this.users = new Map(data.users || []);
         this.currentUser = data.currentUser || null;
       } catch (error) {
-        console.warn('Failed to load fallback auth data:', error);
+        console.warn("Failed to load fallback auth data:", error);
       }
     }
 
@@ -43,28 +46,28 @@ class FallbackAuthSystem {
 
   private createDemoUser() {
     const demoUser: FallbackUser = {
-      uid: 'demo-user-123',
-      email: 'demo@example.com',
-      displayName: 'Demo User',
-      isTemporary: true
+      uid: "demo-user-123",
+      email: "demo@example.com",
+      displayName: "Demo User",
+      isTemporary: true,
     };
 
     const demoProfile: FallbackUserProfile = {
-      uid: 'demo-user-123',
-      email: 'demo@example.com',
-      displayName: 'Demo User',
-      college: 'Demo College',
-      year: '3rd Year',
-      branch: 'Computer Science',
+      uid: "demo-user-123",
+      email: "demo@example.com",
+      displayName: "Demo User",
+      college: "Demo College",
+      year: "3rd Year",
+      branch: "Computer Science",
       joinedAt: Date.now(),
       isOnline: true,
-      isTemporary: true
+      isTemporary: true,
     };
 
-    this.users.set('demo@example.com', {
+    this.users.set("demo@example.com", {
       user: demoUser,
       profile: demoProfile,
-      password: 'demo123'
+      password: "demo123",
     });
 
     this.saveToStorage();
@@ -74,18 +77,18 @@ class FallbackAuthSystem {
     try {
       const data = {
         users: Array.from(this.users.entries()),
-        currentUser: this.currentUser
+        currentUser: this.currentUser,
       };
-      localStorage.setItem('fallback_auth_data', JSON.stringify(data));
+      localStorage.setItem("fallback_auth_data", JSON.stringify(data));
     } catch (error) {
-      console.warn('Failed to save fallback auth data:', error);
+      console.warn("Failed to save fallback auth data:", error);
     }
   }
 
   async signIn(email: string, password: string): Promise<FallbackUser> {
     const userData = this.users.get(email);
     if (!userData || userData.password !== password) {
-      throw new Error('Invalid email or password');
+      throw new Error("Invalid email or password");
     }
 
     this.currentUser = userData.user;
@@ -94,9 +97,13 @@ class FallbackAuthSystem {
     return userData.user;
   }
 
-  async signUp(email: string, password: string, additionalInfo: any): Promise<FallbackUser> {
+  async signUp(
+    email: string,
+    password: string,
+    additionalInfo: any,
+  ): Promise<FallbackUser> {
     if (this.users.has(email)) {
-      throw new Error('User already exists');
+      throw new Error("User already exists");
     }
 
     const uid = `fallback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -104,7 +111,7 @@ class FallbackAuthSystem {
       uid,
       email,
       displayName: `${additionalInfo.firstName} ${additionalInfo.lastName}`,
-      isTemporary: true
+      isTemporary: true,
     };
 
     const profile: FallbackUserProfile = {
@@ -116,7 +123,7 @@ class FallbackAuthSystem {
       branch: additionalInfo.branch,
       joinedAt: Date.now(),
       isOnline: true,
-      isTemporary: true
+      isTemporary: true,
     };
 
     this.users.set(email, { user, profile, password });
@@ -156,11 +163,13 @@ class FallbackAuthSystem {
     }
   }
 
-  onAuthStateChanged(callback: (user: FallbackUser | null) => void): () => void {
+  onAuthStateChanged(
+    callback: (user: FallbackUser | null) => void,
+  ): () => void {
     this.listeners.push(callback);
     // Call immediately with current user
     callback(this.currentUser);
-    
+
     // Return unsubscribe function
     return () => {
       const index = this.listeners.indexOf(callback);
@@ -171,14 +180,16 @@ class FallbackAuthSystem {
   }
 
   private notifyListeners() {
-    this.listeners.forEach(listener => listener(this.currentUser));
+    this.listeners.forEach((listener) => listener(this.currentUser));
   }
 
   // Check if Firebase is available
   async testFirebaseConnection(): Promise<boolean> {
     try {
       // Try to make a simple request to Firebase
-      const response = await fetch('https://www.googleapis.com/identitytoolkit/v3/relyingparty/getProjectConfig?key=AIzaSyAPrU7_F5U0kDqosgI0eVU8VWsPdXQLDug');
+      const response = await fetch(
+        "https://www.googleapis.com/identitytoolkit/v3/relyingparty/getProjectConfig?key=AIzaSyAPrU7_F5U0kDqosgI0eVU8VWsPdXQLDug",
+      );
       return response.ok;
     } catch {
       return false;

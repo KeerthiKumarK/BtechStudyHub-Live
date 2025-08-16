@@ -1,18 +1,24 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { useFirebase } from "@/contexts/FirebaseContext";
-import { 
-  Eye, 
-  EyeOff, 
-  GraduationCap, 
-  Mail, 
-  Lock, 
+import {
+  Eye,
+  EyeOff,
+  GraduationCap,
+  Mail,
+  Lock,
   User,
   ArrowRight,
   CheckCircle,
@@ -21,7 +27,7 @@ import {
   Chrome,
   Check,
   X,
-  Building
+  Building,
 } from "lucide-react";
 
 interface FormData {
@@ -69,13 +75,15 @@ const validateName = (name: string, field: string): string | undefined => {
 
 const validateEmail = (email: string): string | undefined => {
   if (!email) return "Email is required";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Please enter a valid email address";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    return "Please enter a valid email address";
   return undefined;
 };
 
 const validateCollege = (college: string): string | undefined => {
   if (!college.trim()) return "College name is required";
-  if (college.trim().length < 3) return "College name must be at least 3 characters";
+  if (college.trim().length < 3)
+    return "College name must be at least 3 characters";
   return undefined;
 };
 
@@ -85,11 +93,11 @@ const getPasswordStrength = (password: string): PasswordStrength => {
     lowercase: /[a-z]/.test(password),
     uppercase: /[A-Z]/.test(password),
     number: /\d/.test(password),
-    special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
   };
 
   const score = Object.values(requirements).filter(Boolean).length;
-  
+
   return { score, requirements };
 };
 
@@ -100,24 +108,27 @@ const validatePassword = (password: string): string | undefined => {
   return undefined;
 };
 
-const validateConfirmPassword = (password: string, confirmPassword: string): string | undefined => {
+const validateConfirmPassword = (
+  password: string,
+  confirmPassword: string,
+): string | undefined => {
   if (!confirmPassword) return "Please confirm your password";
   if (password !== confirmPassword) return "Passwords do not match";
   return undefined;
 };
 
-const years = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+const years = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
 const branches = [
-  'Computer Science',
-  'Electronics & Communication',
-  'Mechanical Engineering',
-  'Civil Engineering',
-  'Electrical Engineering',
-  'Information Technology',
-  'Chemical Engineering',
-  'Biotechnology',
-  'Aerospace Engineering',
-  'Other'
+  "Computer Science",
+  "Electronics & Communication",
+  "Mechanical Engineering",
+  "Civil Engineering",
+  "Electrical Engineering",
+  "Information Technology",
+  "Chemical Engineering",
+  "Biotechnology",
+  "Aerospace Engineering",
+  "Other",
 ];
 
 export default function SignUp() {
@@ -132,7 +143,7 @@ export default function SignUp() {
     branch: "",
     password: "",
     confirmPassword: "",
-    agreeToTerms: false
+    agreeToTerms: false,
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
@@ -142,45 +153,51 @@ export default function SignUp() {
 
   // Redirect if already logged in
   if (user && !isLoading) {
-    navigate('/');
+    navigate("/");
     return null;
   }
 
   const passwordStrength = getPasswordStrength(formData.password);
 
-  const handleInputChange = (field: keyof FormData, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (
+    field: keyof FormData,
+    value: string | boolean,
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    
+
     newErrors.firstName = validateName(formData.firstName, "First name");
     newErrors.lastName = validateName(formData.lastName, "Last name");
     newErrors.email = validateEmail(formData.email);
     newErrors.college = validateCollege(formData.college);
-    
+
     if (!formData.year) newErrors.year = "Please select your year";
     if (!formData.branch) newErrors.branch = "Please select your branch";
-    
+
     newErrors.password = validatePassword(formData.password);
-    newErrors.confirmPassword = validateConfirmPassword(formData.password, formData.confirmPassword);
-    
+    newErrors.confirmPassword = validateConfirmPassword(
+      formData.password,
+      formData.confirmPassword,
+    );
+
     if (!formData.agreeToTerms) {
       newErrors.agreeToTerms = "You must agree to the Terms and Privacy Policy";
     }
 
     setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error !== undefined);
+    return !Object.values(newErrors).some((error) => error !== undefined);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsLoading(true);
@@ -192,40 +209,42 @@ export default function SignUp() {
         lastName: formData.lastName,
         college: formData.college,
         year: formData.year,
-        branch: formData.branch
+        branch: formData.branch,
       });
       setIsSuccess(true);
-      setTimeout(() => navigate('/'), 2000);
+      setTimeout(() => navigate("/"), 2000);
     } catch (error: any) {
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
       setErrors({
-        general: error.message || (
-          error.code === 'auth/email-already-in-use'
+        general:
+          error.message ||
+          (error.code === "auth/email-already-in-use"
             ? "This email is already registered. Please use a different email or try logging in."
-            : "Registration failed. Please try again."
-        )
+            : "Registration failed. Please try again."),
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSocialSignUp = async (provider: 'google' | 'github') => {
+  const handleSocialSignUp = async (provider: "google" | "github") => {
     setIsLoading(true);
     setErrors({});
 
     try {
-      if (provider === 'google') {
+      if (provider === "google") {
         await signInWithGoogle();
       } else {
         await signInWithGithub();
       }
       setIsSuccess(true);
-      setTimeout(() => navigate('/'), 1500);
+      setTimeout(() => navigate("/"), 1500);
     } catch (error: any) {
-      console.error('Social signup error:', error);
+      console.error("Social signup error:", error);
       setErrors({
-        general: error.message || "Social signup failed. Please try again or use email/password registration."
+        general:
+          error.message ||
+          "Social signup failed. Please try again or use email/password registration.",
       });
     } finally {
       setIsLoading(false);
@@ -255,12 +274,18 @@ export default function SignUp() {
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
-              <h2 className="text-2xl font-bold text-foreground">Welcome to BTech Study Hub!</h2>
+              <h2 className="text-2xl font-bold text-foreground">
+                Welcome to BTech Study Hub!
+              </h2>
               <p className="text-muted-foreground">
-                Your account has been created successfully. You're now part of our learning community!
+                Your account has been created successfully. You're now part of
+                our learning community!
               </p>
               <div className="space-y-3">
-                <Button asChild className="w-full bg-gradient-education text-white">
+                <Button
+                  asChild
+                  className="w-full bg-gradient-education text-white"
+                >
                   <Link to="/">
                     Get Started
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -285,13 +310,14 @@ export default function SignUp() {
             </div>
             <span className="text-2xl font-bold">BTech Study Hub</span>
           </div>
-          
+
           <div className="space-y-6">
             <h1 className="text-4xl font-bold leading-tight">
               Start Your Engineering Excellence Journey
             </h1>
             <p className="text-xl text-blue-100">
-              Join 10,000+ students mastering BTech concepts with our comprehensive platform
+              Join 10,000+ students mastering BTech concepts with our
+              comprehensive platform
             </p>
           </div>
 
@@ -326,7 +352,9 @@ export default function SignUp() {
               </div>
               <span className="text-xl font-bold">BTech Study Hub</span>
             </div>
-            <CardTitle className="text-2xl font-bold text-foreground">Create Account</CardTitle>
+            <CardTitle className="text-2xl font-bold text-foreground">
+              Create Account
+            </CardTitle>
             <CardDescription className="text-muted-foreground">
               Join thousands of engineering students
             </CardDescription>
@@ -351,13 +379,17 @@ export default function SignUp() {
                       type="text"
                       placeholder="First name"
                       value={formData.firstName}
-                      onChange={(e) => handleInputChange("firstName", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("firstName", e.target.value)
+                      }
                       className={`pl-10 ${errors.firstName ? "border-destructive" : ""}`}
                       disabled={isLoading}
                     />
                   </div>
                   {errors.firstName && (
-                    <p className="text-sm text-destructive">{errors.firstName}</p>
+                    <p className="text-sm text-destructive">
+                      {errors.firstName}
+                    </p>
                   )}
                 </div>
 
@@ -370,13 +402,17 @@ export default function SignUp() {
                       type="text"
                       placeholder="Last name"
                       value={formData.lastName}
-                      onChange={(e) => handleInputChange("lastName", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("lastName", e.target.value)
+                      }
                       className={`pl-10 ${errors.lastName ? "border-destructive" : ""}`}
                       disabled={isLoading}
                     />
                   </div>
                   {errors.lastName && (
-                    <p className="text-sm text-destructive">{errors.lastName}</p>
+                    <p className="text-sm text-destructive">
+                      {errors.lastName}
+                    </p>
                   )}
                 </div>
               </div>
@@ -409,7 +445,9 @@ export default function SignUp() {
                     type="text"
                     placeholder="Enter your college name"
                     value={formData.college}
-                    onChange={(e) => handleInputChange("college", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("college", e.target.value)
+                    }
                     className={`pl-10 ${errors.college ? "border-destructive" : ""}`}
                     disabled={isLoading}
                   />
@@ -431,7 +469,9 @@ export default function SignUp() {
                   >
                     <option value="">Select year</option>
                     {years.map((year) => (
-                      <option key={year} value={year}>{year}</option>
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
                     ))}
                   </select>
                   {errors.year && (
@@ -444,13 +484,17 @@ export default function SignUp() {
                   <select
                     id="branch"
                     value={formData.branch}
-                    onChange={(e) => handleInputChange("branch", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("branch", e.target.value)
+                    }
                     className={`w-full p-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${errors.branch ? "border-destructive" : ""}`}
                     disabled={isLoading}
                   >
                     <option value="">Select branch</option>
                     {branches.map((branch) => (
-                      <option key={branch} value={branch}>{branch}</option>
+                      <option key={branch} value={branch}>
+                        {branch}
+                      </option>
                     ))}
                   </select>
                   {errors.branch && (
@@ -468,7 +512,9 @@ export default function SignUp() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Create a strong password"
                     value={formData.password}
-                    onChange={(e) => handleInputChange("password", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
                     className={`pl-10 pr-10 ${errors.password ? "border-destructive" : ""}`}
                     disabled={isLoading}
                   />
@@ -477,43 +523,75 @@ export default function SignUp() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
-                
+
                 {formData.password && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Password strength:</span>
-                      <span className={`font-medium ${passwordStrength.score >= 4 ? 'text-green-600' : passwordStrength.score >= 3 ? 'text-blue-600' : passwordStrength.score >= 2 ? 'text-yellow-600' : 'text-red-600'}`}>
+                      <span className="text-muted-foreground">
+                        Password strength:
+                      </span>
+                      <span
+                        className={`font-medium ${passwordStrength.score >= 4 ? "text-green-600" : passwordStrength.score >= 3 ? "text-blue-600" : passwordStrength.score >= 2 ? "text-yellow-600" : "text-red-600"}`}
+                      >
                         {getPasswordStrengthText(passwordStrength.score)}
                       </span>
                     </div>
-                    <Progress 
-                      value={(passwordStrength.score / 5) * 100} 
+                    <Progress
+                      value={(passwordStrength.score / 5) * 100}
                       className="h-2"
                     />
                     <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className={`flex items-center space-x-1 ${passwordStrength.requirements.length ? 'text-green-600' : 'text-muted-foreground'}`}>
-                        {passwordStrength.requirements.length ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                      <div
+                        className={`flex items-center space-x-1 ${passwordStrength.requirements.length ? "text-green-600" : "text-muted-foreground"}`}
+                      >
+                        {passwordStrength.requirements.length ? (
+                          <Check className="w-3 h-3" />
+                        ) : (
+                          <X className="w-3 h-3" />
+                        )}
                         <span>8+ characters</span>
                       </div>
-                      <div className={`flex items-center space-x-1 ${passwordStrength.requirements.uppercase ? 'text-green-600' : 'text-muted-foreground'}`}>
-                        {passwordStrength.requirements.uppercase ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                      <div
+                        className={`flex items-center space-x-1 ${passwordStrength.requirements.uppercase ? "text-green-600" : "text-muted-foreground"}`}
+                      >
+                        {passwordStrength.requirements.uppercase ? (
+                          <Check className="w-3 h-3" />
+                        ) : (
+                          <X className="w-3 h-3" />
+                        )}
                         <span>Uppercase</span>
                       </div>
-                      <div className={`flex items-center space-x-1 ${passwordStrength.requirements.lowercase ? 'text-green-600' : 'text-muted-foreground'}`}>
-                        {passwordStrength.requirements.lowercase ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                      <div
+                        className={`flex items-center space-x-1 ${passwordStrength.requirements.lowercase ? "text-green-600" : "text-muted-foreground"}`}
+                      >
+                        {passwordStrength.requirements.lowercase ? (
+                          <Check className="w-3 h-3" />
+                        ) : (
+                          <X className="w-3 h-3" />
+                        )}
                         <span>Lowercase</span>
                       </div>
-                      <div className={`flex items-center space-x-1 ${passwordStrength.requirements.number ? 'text-green-600' : 'text-muted-foreground'}`}>
-                        {passwordStrength.requirements.number ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                      <div
+                        className={`flex items-center space-x-1 ${passwordStrength.requirements.number ? "text-green-600" : "text-muted-foreground"}`}
+                      >
+                        {passwordStrength.requirements.number ? (
+                          <Check className="w-3 h-3" />
+                        ) : (
+                          <X className="w-3 h-3" />
+                        )}
                         <span>Number</span>
                       </div>
                     </div>
                   </div>
                 )}
-                
+
                 {errors.password && (
                   <p className="text-sm text-destructive">{errors.password}</p>
                 )}
@@ -528,7 +606,9 @@ export default function SignUp() {
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm your password"
                     value={formData.confirmPassword}
-                    onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("confirmPassword", e.target.value)
+                    }
                     className={`pl-10 pr-10 ${errors.confirmPassword ? "border-destructive" : ""}`}
                     disabled={isLoading}
                   />
@@ -537,32 +617,49 @@ export default function SignUp() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-sm text-destructive">{errors.confirmPassword}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.confirmPassword}
+                  </p>
                 )}
               </div>
 
               <div className="space-y-2">
                 <label className="flex items-start space-x-2">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={formData.agreeToTerms}
-                    onChange={(e) => handleInputChange("agreeToTerms", e.target.checked)}
+                    onChange={(e) =>
+                      handleInputChange("agreeToTerms", e.target.checked)
+                    }
                     className="mt-1 rounded border-border"
                     disabled={isLoading}
                   />
                   <span className="text-sm text-muted-foreground">
                     I agree to the{" "}
-                    <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>
-                    {" "}and{" "}
-                    <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
+                    <Link to="/terms" className="text-primary hover:underline">
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link
+                      to="/privacy"
+                      className="text-primary hover:underline"
+                    >
+                      Privacy Policy
+                    </Link>
                   </span>
                 </label>
                 {errors.agreeToTerms && (
-                  <p className="text-sm text-destructive">{errors.agreeToTerms}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.agreeToTerms}
+                  </p>
                 )}
               </div>
 
@@ -590,7 +687,9 @@ export default function SignUp() {
                 <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or sign up with</span>
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or sign up with
+                </span>
               </div>
             </div>
 
@@ -598,7 +697,7 @@ export default function SignUp() {
               <div className="grid grid-cols-2 gap-3">
                 <Button
                   variant="outline"
-                  onClick={() => handleSocialSignUp('google')}
+                  onClick={() => handleSocialSignUp("google")}
                   disabled={isLoading}
                 >
                   <Chrome className="w-4 h-4 mr-2" />
@@ -606,7 +705,7 @@ export default function SignUp() {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => handleSocialSignUp('github')}
+                  onClick={() => handleSocialSignUp("github")}
                   disabled={isLoading}
                 >
                   <Github className="w-4 h-4 mr-2" />
@@ -615,7 +714,10 @@ export default function SignUp() {
               </div>
               <p className="text-xs text-muted-foreground text-center">
                 Social login may require additional setup.{" "}
-                <Link to="/firebase-config" className="text-primary hover:underline">
+                <Link
+                  to="/firebase-config"
+                  className="text-primary hover:underline"
+                >
                   Setup instructions
                 </Link>
               </p>
@@ -623,7 +725,10 @@ export default function SignUp() {
 
             <div className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link to="/login" className="text-primary hover:underline font-medium">
+              <Link
+                to="/login"
+                className="text-primary hover:underline font-medium"
+              >
                 Sign in here
               </Link>
             </div>

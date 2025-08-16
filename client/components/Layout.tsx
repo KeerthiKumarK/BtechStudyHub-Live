@@ -22,7 +22,7 @@ import {
   Star,
   Sun,
   Moon,
-  Gamepad2
+  Gamepad2,
 } from "lucide-react";
 
 interface LayoutProps {
@@ -60,15 +60,17 @@ export default function Layout({ children }: LayoutProps) {
 
   // Initialize dark mode from localStorage
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const shouldUseDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
+    const shouldUseDark = savedTheme === "dark" || (!savedTheme && prefersDark);
 
     setIsDarkMode(shouldUseDark);
     if (shouldUseDark) {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   }, []);
 
@@ -77,11 +79,11 @@ export default function Layout({ children }: LayoutProps) {
     setIsDarkMode(newDarkMode);
 
     if (newDarkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
     } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
     }
   };
 
@@ -163,27 +165,32 @@ export default function Layout({ children }: LayoutProps) {
                   <div className="flex items-center space-x-2">
                     <Avatar className="w-8 h-8">
                       <AvatarImage
-                        src={userProfile?.profileImageURL || userProfile?.photoURL}
-                        alt={userProfile?.displayName || 'User'}
+                        src={
+                          userProfile?.profileImageURL || userProfile?.photoURL
+                        }
+                        alt={userProfile?.displayName || "User"}
                       />
                       <AvatarFallback className="bg-gradient-education text-white text-xs font-semibold">
-                        {userProfile?.displayName?.split(' ').map(n => n[0]).join('') || 'U'}
+                        {userProfile?.displayName
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("") || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="text-sm">
-                      <p className="font-medium text-foreground">{userProfile?.displayName || 'User'}</p>
-                      <p className="text-xs text-muted-foreground">{userProfile?.college}</p>
+                      <p className="font-medium text-foreground">
+                        {userProfile?.displayName || "User"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {userProfile?.college}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Button variant="ghost" size="sm" asChild>
                       <Link to="/profile">Profile</Link>
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => logout()}
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => logout()}>
                       Logout
                     </Button>
                   </div>
@@ -193,7 +200,11 @@ export default function Layout({ children }: LayoutProps) {
                   <Button variant="ghost" size="sm" asChild>
                     <Link to="/login">Login</Link>
                   </Button>
-                  <Button size="sm" className="bg-gradient-education text-white" asChild>
+                  <Button
+                    size="sm"
+                    className="bg-gradient-education text-white"
+                    asChild
+                  >
                     <Link to="/signup">Sign Up</Link>
                   </Button>
                 </>
@@ -280,20 +291,38 @@ export default function Layout({ children }: LayoutProps) {
                     <div className="flex items-center space-x-3 px-3 py-2">
                       <Avatar className="w-10 h-10">
                         <AvatarImage
-                          src={userProfile?.profileImageURL || userProfile?.photoURL}
-                          alt={userProfile?.displayName || 'User'}
+                          src={
+                            userProfile?.profileImageURL ||
+                            userProfile?.photoURL
+                          }
+                          alt={userProfile?.displayName || "User"}
                         />
                         <AvatarFallback className="bg-gradient-education text-white text-sm font-semibold">
-                          {userProfile?.displayName?.split(' ').map(n => n[0]).join('') || 'U'}
+                          {userProfile?.displayName
+                            ?.split(" ")
+                            .map((n) => n[0])
+                            .join("") || "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium text-foreground">{userProfile?.displayName || 'User'}</p>
-                        <p className="text-xs text-muted-foreground">{userProfile?.college}</p>
+                        <p className="font-medium text-foreground">
+                          {userProfile?.displayName || "User"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {userProfile?.college}
+                        </p>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" className="w-full justify-start" asChild>
-                      <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start"
+                      asChild
+                    >
+                      <Link
+                        to="/profile"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
                         Profile
                       </Link>
                     </Button>
@@ -311,13 +340,28 @@ export default function Layout({ children }: LayoutProps) {
                   </div>
                 ) : (
                   <div className="flex flex-col space-y-2">
-                    <Button variant="ghost" size="sm" className="justify-start" asChild>
-                      <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="justify-start"
+                      asChild
+                    >
+                      <Link
+                        to="/login"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
                         Login
                       </Link>
                     </Button>
-                    <Button size="sm" className="bg-gradient-education text-white justify-start" asChild>
-                      <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button
+                      size="sm"
+                      className="bg-gradient-education text-white justify-start"
+                      asChild
+                    >
+                      <Link
+                        to="/signup"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
                         Sign Up
                       </Link>
                     </Button>
@@ -333,9 +377,7 @@ export default function Layout({ children }: LayoutProps) {
       <WelcomeMessage />
 
       {/* Main Content */}
-      <main className="flex-1">
-        {children}
-      </main>
+      <main className="flex-1">{children}</main>
 
       {/* Footer */}
       <footer className="bg-muted mt-16">
@@ -352,8 +394,9 @@ export default function Layout({ children }: LayoutProps) {
                 </span>
               </Link>
               <p className="text-muted-foreground mb-4 max-w-md">
-                Empowering engineering students with comprehensive study materials, 
-                expert-curated resources, and a vibrant learning community.
+                Empowering engineering students with comprehensive study
+                materials, expert-curated resources, and a vibrant learning
+                community.
               </p>
               <div className="flex space-x-4">
                 <Button variant="ghost" size="sm">
@@ -367,18 +410,32 @@ export default function Layout({ children }: LayoutProps) {
 
             {/* Quick Links */}
             <div>
-              <h3 className="font-semibold text-foreground mb-4">Study Resources</h3>
+              <h3 className="font-semibold text-foreground mb-4">
+                Study Resources
+              </h3>
               <div className="space-y-2">
-                <Link to="/mcqs" className="block text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/mcqs"
+                  className="block text-muted-foreground hover:text-foreground transition-colors"
+                >
                   MCQ Practice
                 </Link>
-                <Link to="/textbooks" className="block text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/textbooks"
+                  className="block text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Textbooks
                 </Link>
-                <Link to="/papers" className="block text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/papers"
+                  className="block text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Previous Papers
                 </Link>
-                <Link to="/videos" className="block text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/videos"
+                  className="block text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Video Lectures
                 </Link>
               </div>
@@ -388,25 +445,46 @@ export default function Layout({ children }: LayoutProps) {
             <div>
               <h3 className="font-semibold text-foreground mb-4">Community</h3>
               <div className="space-y-2">
-                <Link to="/community" className="block text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/community"
+                  className="block text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Study Groups
                 </Link>
-                <Link to="/chat" className="block text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/chat"
+                  className="block text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Live Chat
                 </Link>
-                <Link to="/freelancing" className="block text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/freelancing"
+                  className="block text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Freelancing
                 </Link>
-                <Link to="/portfolio" className="block text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/portfolio"
+                  className="block text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Portfolio & Resume
                 </Link>
-                <Link to="/games" className="block text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/games"
+                  className="block text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Interactive Games
                 </Link>
-                <Link to="/feedback" className="block text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/feedback"
+                  className="block text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Feedback
                 </Link>
-                <Link to="/about" className="block text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/about"
+                  className="block text-muted-foreground hover:text-foreground transition-colors"
+                >
                   About Us
                 </Link>
               </div>
@@ -415,7 +493,8 @@ export default function Layout({ children }: LayoutProps) {
 
           <div className="border-t border-border mt-8 pt-8 text-center">
             <p className="text-muted-foreground">
-              © 2024 BTech Study Hub. All rights reserved. Made with ❤️ for engineering students.
+              © 2024 BTech Study Hub. All rights reserved. Made with ❤️ for
+              engineering students.
             </p>
           </div>
         </div>

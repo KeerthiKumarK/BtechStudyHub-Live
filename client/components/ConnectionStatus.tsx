@@ -1,7 +1,14 @@
-import React from 'react';
-import { useFirebase } from '@/contexts/FirebaseContext';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, Wifi, WifiOff, Database, DatabaseZap, Shield } from 'lucide-react';
+import React from "react";
+import { useFirebase } from "@/contexts/FirebaseContext";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  AlertTriangle,
+  Wifi,
+  WifiOff,
+  Database,
+  DatabaseZap,
+  Shield,
+} from "lucide-react";
 
 export default function ConnectionStatus() {
   const { isOnline, firebaseConnected, useFallbackAuth } = useFirebase();
@@ -30,7 +37,8 @@ export default function ConnectionStatus() {
           <AlertDescription className="text-orange-800">
             <strong>Database Connection Issue</strong>
             <br />
-            Having trouble connecting to our servers. Some features may not work properly.
+            Having trouble connecting to our servers. Some features may not work
+            properly.
           </AlertDescription>
         </Alert>
       )}
