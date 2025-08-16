@@ -175,6 +175,22 @@ export default function Chat() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
+  const handleCreateGroup = async () => {
+    if (!groupFormData.name.trim() || !groupFormData.description.trim()) {
+      return;
+    }
+
+    try {
+      // This would typically involve creating a new room in Firebase
+      // For now, we'll just reset the form and close the dialog
+      console.log('Creating group:', groupFormData);
+      setGroupFormData({ name: "", description: "", type: "general" });
+      setShowCreateGroup(false);
+    } catch (error) {
+      console.error('Error creating group:', error);
+    }
+  };
+
   const filteredMessages = messages.filter(msg =>
     msg.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
     msg.username.toLowerCase().includes(searchTerm.toLowerCase())
