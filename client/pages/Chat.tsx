@@ -217,6 +217,9 @@ export default function Chat() {
       // Add to the chat rooms list immediately
       setChatRooms(prev => [newRoom, ...prev]);
 
+      // Auto-join the creator to the new room
+      setJoinedRooms(prev => [...prev, newRoom.id]);
+
       // Set as selected room
       setSelectedRoom(newRoom);
 
