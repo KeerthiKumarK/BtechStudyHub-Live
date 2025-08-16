@@ -280,12 +280,17 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({
             firebaseError,
           );
 
-          // If it's a network error, switch to fallback mode
-          if (firebaseError.code === "auth/network-request-failed") {
+          // Switch to fallback mode for network errors or user-not-found (for admin account)
+          if (
+            firebaseError.code === "auth/network-request-failed" ||
+            firebaseError.code === "auth/user-not-found" ||
+            firebaseError.code === "auth/wrong-password" ||
+            firebaseError.code === "auth/invalid-credential"
+          ) {
             setUseFallbackAuth(true);
-            console.log("Switching to fallback authentication mode");
+            console.log("Switching to fallback authentication mode due to:", firebaseError.code);
           } else {
-            // Re-throw non-network errors
+            // Re-throw other errors
             throw firebaseError;
           }
         }
