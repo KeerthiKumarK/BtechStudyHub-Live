@@ -23,6 +23,7 @@ import Freelancing from "./pages/Freelancing";
 import Feedback from "./pages/Feedback";
 import Profile from "./pages/Profile";
 import Portfolio from "./pages/Portfolio";
+import Admin from "./pages/Admin";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
