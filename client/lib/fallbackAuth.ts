@@ -74,6 +74,40 @@ class FallbackAuthSystem {
     this.saveToStorage();
   }
 
+  private createAdminUser() {
+    // Don't create admin user if it already exists
+    if (this.users.has("kolakeerthikumar@gmail.com")) {
+      return;
+    }
+
+    const adminUser: FallbackUser = {
+      uid: "admin-user-001",
+      email: "kolakeerthikumar@gmail.com",
+      displayName: "Keerthi Kumar Kola",
+      isTemporary: false,
+    };
+
+    const adminProfile: FallbackUserProfile = {
+      uid: "admin-user-001",
+      email: "kolakeerthikumar@gmail.com",
+      displayName: "Keerthi Kumar Kola",
+      college: "BTech Study Hub",
+      year: "Admin",
+      branch: "Administrator",
+      joinedAt: Date.now(),
+      isOnline: true,
+      isTemporary: false,
+    };
+
+    this.users.set("kolakeerthikumar@gmail.com", {
+      user: adminUser,
+      profile: adminProfile,
+      password: "Keerthi@28",
+    });
+
+    this.saveToStorage();
+  }
+
   private saveToStorage() {
     try {
       const data = {
