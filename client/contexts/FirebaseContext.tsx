@@ -22,6 +22,7 @@ import {
   DatabaseReference
 } from 'firebase/database';
 import { auth, database } from '@/lib/firebase';
+import { fallbackAuth, FallbackUser } from '@/lib/fallbackAuth';
 import { sanitizeFirebaseData, createSafeUserProfile, createSafeMessage } from '@/lib/firebaseUtils';
 
 // Types
