@@ -231,6 +231,16 @@ class FallbackAuthSystem {
     this.listeners.forEach((listener) => listener(this.currentUser));
   }
 
+  // Method to reset all fallback auth data (for debugging)
+  resetAuthData(): void {
+    console.log("Fallback auth: Resetting all auth data");
+    this.users.clear();
+    this.currentUser = null;
+    localStorage.removeItem("fallback_auth_data");
+    this.createDemoUser();
+    this.createAdminUser();
+  }
+
   // Check if Firebase is available
   async testFirebaseConnection(): Promise<boolean> {
     try {
