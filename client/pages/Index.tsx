@@ -190,7 +190,7 @@ export default function Index() {
             </div>
 
             {/* Stats Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-3xl mx-auto">
               {stats.map((stat, index) => {
                 const Icon = stat.icon;
                 return (
