@@ -128,6 +128,16 @@ export default function Index() {
     setIsLoaded(true);
   }, []);
 
+  const scrollToStudyMaterials = () => {
+    const studyMaterialsSection = document.getElementById('study-materials-section');
+    if (studyMaterialsSection) {
+      studyMaterialsSection.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <Layout>
       {/* Hero Section */}
