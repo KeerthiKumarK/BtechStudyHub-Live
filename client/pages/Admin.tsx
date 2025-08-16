@@ -140,21 +140,24 @@ export default function Admin() {
     }
   }, [user]);
 
+  const { signIn } = useFirebase();
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
 
-    // For admin access, we'll check credentials and navigate to sign in
+    // Verify the entered credentials match the admin credentials
     if (
       loginData.email === ADMIN_EMAIL &&
       loginData.password === ADMIN_PASSWORD
     ) {
-      // If user is already logged in with admin email, grant access
-      if (user?.email === ADMIN_EMAIL) {
-        setIsAuthenticated(true);
-      } else {
-        // Otherwise, redirect to login page with admin credentials hint
-        navigate('/login?admin=true');
+      try {
+        // Try to sign in the admin user
+        await signIn(ADMIN_EMAIL, ADMIN_PASSWORD);
+        // The useEffect will handle setting isAuthenticated when user changes
+      } catch (error: any) {
+        console.error("Admin login error:", error);
+        setLoginError("Failed to authenticate admin user. Please try again.");
       }
     } else {
       setLoginError("Invalid admin credentials");
