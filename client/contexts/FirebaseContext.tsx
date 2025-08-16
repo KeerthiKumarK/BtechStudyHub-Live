@@ -139,6 +139,7 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [loading, setLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [firebaseConnected, setFirebaseConnected] = useState(false);
+  const [useFallbackAuth, setUseFallbackAuth] = useState(false);
 
   // Initialize default chat rooms if they don't exist
   const initializeDefaultRooms = async () => {
