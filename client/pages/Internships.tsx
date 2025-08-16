@@ -379,7 +379,7 @@ export default function Internships() {
           </div>
 
           {/* Internships Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {filteredInternships.map((internship) => (
               <Card key={internship.id} className={`group hover:shadow-lg transition-all duration-300 ${internship.featured ? 'ring-2 ring-primary/20' : ''}`}>
                 <CardHeader className="pb-4">
