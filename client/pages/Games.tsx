@@ -259,20 +259,20 @@ export default function Games() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex justify-center">
-                    <div className="grid grid-cols-8 gap-0 border-2 border-gray-400 bg-white">
+                  <div className="flex justify-center overflow-x-auto">
+                    <div className="grid grid-cols-8 gap-0 border-2 border-gray-400 bg-white min-w-fit">
                       {board.map((row, rowIndex) =>
                         row.map((square, colIndex) => {
                           const isLight = (rowIndex + colIndex) % 2 === 0;
                           const isSelected = selectedSquare && selectedSquare[0] === rowIndex && selectedSquare[1] === colIndex;
-                          
+
                           return (
                             <div
                               key={`${rowIndex}-${colIndex}`}
                               className={`
-                                w-12 h-12 md:w-16 md:h-16 flex items-center justify-center cursor-pointer text-2xl md:text-4xl transition-colors
+                                w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 flex items-center justify-center cursor-pointer text-lg sm:text-2xl md:text-4xl transition-colors
                                 ${isLight ? 'bg-amber-100' : 'bg-amber-800'}
-                                ${isSelected ? 'ring-4 ring-blue-500' : ''}
+                                ${isSelected ? 'ring-2 sm:ring-4 ring-blue-500' : ''}
                                 hover:opacity-80
                               `}
                               onClick={() => handleSquareClick(rowIndex, colIndex)}
