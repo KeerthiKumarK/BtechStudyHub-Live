@@ -653,54 +653,69 @@ export default function Chat() {
                       </div>
                     )}
 
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={handleFileAttachment}
-                        title="Attach file"
-                      >
-                        <Paperclip className="w-4 h-4" />
-                      </Button>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        className="hidden"
-                        onChange={handleFileSelect}
-                        accept="image/*,application/pdf,.doc,.docx"
-                      />
-                      <div className="flex-1 relative">
-                        <Input
-                          placeholder="Type a message..."
-                          value={newMessage}
-                          onChange={(e) => setNewMessage(e.target.value)}
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                              e.preventDefault();
-                              handleSendMessage();
-                            }
-                          }}
-                          className="pr-12"
-                        />
+                    {joinedRooms.includes(selectedRoom.id) ? (
+                      <div className="flex items-center space-x-2">
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="absolute right-1 top-1/2 transform -translate-y-1/2"
-                          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                          title="Add emoji"
+                          onClick={handleFileAttachment}
+                          title="Attach file"
                         >
-                          <Smile className="w-4 h-4" />
+                          <Paperclip className="w-4 h-4" />
+                        </Button>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          className="hidden"
+                          onChange={handleFileSelect}
+                          accept="image/*,application/pdf,.doc,.docx"
+                        />
+                        <div className="flex-1 relative">
+                          <Input
+                            placeholder="Type a message..."
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                handleSendMessage();
+                              }
+                            }}
+                            className="pr-12"
+                          />
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="absolute right-1 top-1/2 transform -translate-y-1/2"
+                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                            title="Add emoji"
+                          >
+                            <Smile className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={handleSendMessage}
+                          disabled={!newMessage.trim()}
+                          className="bg-gradient-education text-white"
+                        >
+                          <Send className="w-4 h-4" />
                         </Button>
                       </div>
-                      <Button
-                        size="sm"
-                        onClick={handleSendMessage}
-                        disabled={!newMessage.trim()}
-                        className="bg-gradient-education text-white"
-                      >
-                        <Send className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    ) : (
+                      <div className="text-center py-4">
+                        <p className="text-muted-foreground mb-3">
+                          You need to join this room to send messages
+                        </p>
+                        <Button
+                          className="bg-gradient-education text-white"
+                          onClick={() => handleJoinRoom(selectedRoom.id)}
+                        >
+                          <UserPlus className="w-4 h-4 mr-2" />
+                          Join Room
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </>
               ) : (
