@@ -579,10 +579,41 @@ export default function Chat() {
 
                   {/* Message Input */}
                   <div className="p-4 border-t border-border bg-background">
+                    {/* Emoji Picker */}
+                    {showEmojiPicker && (
+                      <div className="mb-4 p-3 bg-muted rounded-lg">
+                        <div className="grid grid-cols-6 gap-2">
+                          {popularEmojis.map((emoji) => (
+                            <Button
+                              key={emoji}
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEmojiSelect(emoji)}
+                              className="h-8 w-8 p-0 text-lg hover:bg-background"
+                            >
+                              {emoji}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="flex items-center space-x-2">
-                      <Button size="sm" variant="ghost">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={handleFileAttachment}
+                        title="Attach file"
+                      >
                         <Paperclip className="w-4 h-4" />
                       </Button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        className="hidden"
+                        onChange={handleFileSelect}
+                        accept="image/*,application/pdf,.doc,.docx"
+                      />
                       <div className="flex-1 relative">
                         <Input
                           placeholder="Type a message..."
@@ -600,6 +631,8 @@ export default function Chat() {
                           size="sm"
                           variant="ghost"
                           className="absolute right-1 top-1/2 transform -translate-y-1/2"
+                          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                          title="Add emoji"
                         >
                           <Smile className="w-4 h-4" />
                         </Button>
