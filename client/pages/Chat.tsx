@@ -477,6 +477,23 @@ export default function Chat() {
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
+                        {joinedRooms.includes(selectedRoom.id) ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleLeaveRoom(selectedRoom.id)}
+                          >
+                            Leave Room
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            className="bg-gradient-education text-white"
+                            onClick={() => handleJoinRoom(selectedRoom.id)}
+                          >
+                            Join Room
+                          </Button>
+                        )}
                         <Button size="sm" variant="ghost">
                           <MoreVertical className="w-4 h-4" />
                         </Button>
