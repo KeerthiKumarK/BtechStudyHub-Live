@@ -97,6 +97,7 @@ interface FirebaseContextType {
   loading: boolean;
   isOnline: boolean;
   firebaseConnected: boolean;
+  useFallbackAuth: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, additionalInfo: any) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
