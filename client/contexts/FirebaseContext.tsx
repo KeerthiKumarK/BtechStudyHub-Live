@@ -564,6 +564,8 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     user,
     userProfile,
     loading,
+    isOnline,
+    firebaseConnected,
     signIn,
     signUp,
     signInWithGoogle,
