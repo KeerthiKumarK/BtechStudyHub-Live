@@ -53,12 +53,14 @@ export default function Chat() {
   const [editContent, setEditContent] = useState("");
   const [showRoomList, setShowRoomList] = useState(false);
   const [showCreateGroup, setShowCreateGroup] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [groupFormData, setGroupFormData] = useState({
     name: "",
     description: "",
     type: "general" as "general" | "year" | "subject"
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
