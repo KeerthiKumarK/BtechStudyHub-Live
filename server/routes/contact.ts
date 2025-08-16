@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import nodemailer from 'nodemailer';
+import { Request, Response } from "express";
+import nodemailer from "nodemailer";
 
 export interface ContactSubmission {
   id: string;
@@ -8,7 +8,7 @@ export interface ContactSubmission {
   subject: string;
   message: string;
   timestamp: number;
-  status: 'pending' | 'responded' | 'closed';
+  status: "pending" | "responded" | "closed";
 }
 
 // Email configuration with multiple fallback options
@@ -16,11 +16,11 @@ const createEmailTransporter = () => {
   // Try Gmail first if credentials are available
   if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
     return nodemailer.createTransporter({
-      service: 'gmail',
+      service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
+        pass: process.env.EMAIL_PASS,
+      },
     });
   }
 
@@ -28,23 +28,23 @@ const createEmailTransporter = () => {
   if (process.env.SMTP_HOST) {
     return nodemailer.createTransporter({
       host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
+      port: parseInt(process.env.SMTP_PORT || "587"),
       secure: false,
       auth: {
         user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
+        pass: process.env.SMTP_PASS,
+      },
     });
   }
 
   // Development fallback - use ethereal email for testing
   return nodemailer.createTransporter({
-    host: 'smtp.ethereal.email',
+    host: "smtp.ethereal.email",
     port: 587,
     auth: {
-      user: 'ethereal.user@ethereal.email',
-      pass: 'ethereal.pass'
-    }
+      user: "ethereal.user@ethereal.email",
+      pass: "ethereal.pass",
+    },
   });
 };
 
@@ -55,7 +55,8 @@ export const submitContactForm = async (req: Request, res: Response) => {
     // Validate required fields
     if (!name || !email || !subject || !message) {
       return res.status(400).json({
-        error: 'Missing required fields: name, email, subject, and message are required'
+        error:
+          "Missing required fields: name, email, subject, and message are required",
       });
     }
 
@@ -63,7 +64,7 @@ export const submitContactForm = async (req: Request, res: Response) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({
-        error: 'Invalid email format'
+        error: "Invalid email format",
       });
     }
 
@@ -73,19 +74,19 @@ export const submitContactForm = async (req: Request, res: Response) => {
       subject,
       message,
       timestamp: new Date().toISOString(),
-      submittedAt: new Date().toLocaleString()
+      submittedAt: new Date().toLocaleString(),
     };
 
     // Enhanced logging for contact form submissions
-    console.log('\n🔔 NEW CONTACT FORM SUBMISSION 🔔');
-    console.log('==========================================');
-    console.log('📧 TO: kolakeerthikumar@gmail.com');
-    console.log('👤 FROM:', name, `(${email})`);
-    console.log('📝 SUBJECT:', subject);
-    console.log('⏰ TIME:', submissionData.submittedAt);
-    console.log('📄 MESSAGE:');
+    console.log("\n🔔 NEW CONTACT FORM SUBMISSION 🔔");
+    console.log("==========================================");
+    console.log("📧 TO: kolakeerthikumar@gmail.com");
+    console.log("👤 FROM:", name, `(${email})`);
+    console.log("📝 SUBJECT:", subject);
+    console.log("⏰ TIME:", submissionData.submittedAt);
+    console.log("📄 MESSAGE:");
     console.log(message);
-    console.log('==========================================\n');
+    console.log("==========================================\n");
 
     // Multiple approaches to ensure you receive the contact form submission
     let emailSent = false;
@@ -93,12 +94,12 @@ export const submitContactForm = async (req: Request, res: Response) => {
     // Method 1: Try to send email via SMTP if configured
     if (!emailSent) {
       try {
-        console.log('Attempting to send email notification...');
+        console.log("Attempting to send email notification...");
         const transporter = createEmailTransporter();
 
         const mailOptions = {
-          from: process.env.EMAIL_USER || 'noreply@btechstudyhub.com',
-          to: 'kolakeerthikumar@gmail.com',
+          from: process.env.EMAIL_USER || "noreply@btechstudyhub.com",
+          to: "kolakeerthikumar@gmail.com",
           subject: `Contact Form: ${subject}`,
           html: `
             <h2>New Contact Form Submission - BTech Study Hub</h2>
@@ -127,15 +128,14 @@ export const submitContactForm = async (req: Request, res: Response) => {
               Reply to: ${email}
             </p>
           `,
-          replyTo: email
+          replyTo: email,
         };
 
         const result = await transporter.sendMail(mailOptions);
-        console.log('✅ Email sent successfully:', result.messageId);
+        console.log("✅ Email sent successfully:", result.messageId);
         emailSent = true;
-
       } catch (emailError) {
-        console.log('❌ Email sending failed:', emailError.message);
+        console.log("❌ Email sending failed:", emailError.message);
       }
     }
 
@@ -143,82 +143,82 @@ export const submitContactForm = async (req: Request, res: Response) => {
     if (!emailSent && process.env.WEBHOOK_URL) {
       try {
         const webhookPayload = {
-          to: 'kolakeerthikumar@gmail.com',
+          to: "kolakeerthikumar@gmail.com",
           from: email,
           name: name,
           subject: subject,
           message: message,
           timestamp: submissionData.submittedAt,
-          source: 'BTech Study Hub Contact Form'
+          source: "BTech Study Hub Contact Form",
         };
 
         const webhookResponse = await fetch(process.env.WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(webhookPayload)
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(webhookPayload),
         });
 
         if (webhookResponse.ok) {
-          console.log('✅ Webhook notification sent successfully');
+          console.log("✅ Webhook notification sent successfully");
           emailSent = true;
         }
       } catch (webhookError) {
-        console.log('❌ Webhook notification failed:', webhookError.message);
+        console.log("❌ Webhook notification failed:", webhookError.message);
       }
     }
 
     // Method 3: Enhanced console logging (always runs as backup)
-    console.log('\n📬 CONTACT FORM NOTIFICATION 📬');
-    console.log('==========================================');
+    console.log("\n📬 CONTACT FORM NOTIFICATION 📬");
+    console.log("==========================================");
     console.log(`📧 Notification for: kolakeerthikumar@gmail.com`);
     console.log(`👤 From: ${name} <${email}>`);
     console.log(`📝 Subject: ${subject}`);
     console.log(`⏰ Received: ${submissionData.submittedAt}`);
     console.log(`📄 Message:`);
     console.log(`${message}`);
-    console.log('==========================================');
-    console.log(`📊 Email Status: ${emailSent ? 'SENT' : 'LOGGED_ONLY'}`);
-    console.log('==========================================\n');
+    console.log("==========================================");
+    console.log(`📊 Email Status: ${emailSent ? "SENT" : "LOGGED_ONLY"}`);
+    console.log("==========================================\n");
 
     res.status(201).json({
-      message: 'Message sent successfully',
-      timestamp: Date.now()
+      message: "Message sent successfully",
+      timestamp: Date.now(),
     });
   } catch (error) {
-    console.error('Error submitting contact form:', error);
+    console.error("Error submitting contact form:", error);
     res.status(500).json({
-      error: 'Internal server error'
+      error: "Internal server error",
     });
   }
 };
 
 export const getContactSubmissions = async (req: Request, res: Response) => {
   try {
-    const { limit = 10, status = 'pending' } = req.query;
+    const { limit = 10, status = "pending" } = req.query;
 
     // In a real application, you would query your database
     // This endpoint would typically be protected and only accessible by admins
     const sampleSubmissions: Partial<ContactSubmission>[] = [
       {
-        id: 'sample-1',
-        name: 'John Doe',
-        email: 'john@example.com',
-        subject: 'Question about courses',
-        message: 'I have a question about the available courses...',
+        id: "sample-1",
+        name: "John Doe",
+        email: "john@example.com",
+        subject: "Question about courses",
+        message: "I have a question about the available courses...",
         timestamp: Date.now() - 86400000, // 1 day ago
-        status: 'pending'
-      }
+        status: "pending",
+      },
     ];
 
     res.json({
       submissions: sampleSubmissions,
       total: sampleSubmissions.length,
-      limit: Number(limit)
+      limit: Number(limit),
     });
   } catch (error) {
-    console.error('Error fetching contact submissions:', error);
+    console.error("Error fetching contact submissions:", error);
     res.status(500).json({
-      error: 'Internal server error'
+      error: "Internal server error",
     });
   }
 };
@@ -228,9 +228,9 @@ export const updateContactStatus = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!['pending', 'responded', 'closed'].includes(status)) {
+    if (!["pending", "responded", "closed"].includes(status)) {
       return res.status(400).json({
-        error: 'Invalid status. Must be one of: pending, responded, closed'
+        error: "Invalid status. Must be one of: pending, responded, closed",
       });
     }
 
@@ -238,14 +238,14 @@ export const updateContactStatus = async (req: Request, res: Response) => {
     console.log(`Updating contact submission ${id} status to ${status}`);
 
     res.json({
-      message: 'Contact submission status updated successfully',
+      message: "Contact submission status updated successfully",
       id,
-      status
+      status,
     });
   } catch (error) {
-    console.error('Error updating contact status:', error);
+    console.error("Error updating contact status:", error);
     res.status(500).json({
-      error: 'Internal server error'
+      error: "Internal server error",
     });
   }
 };
