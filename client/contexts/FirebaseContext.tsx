@@ -215,15 +215,53 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         throw new Error('No internet connection. Please check your network and try again.');
       }
 
-      await signInWithEmailAndPassword(auth, email, password);
+      // Try Firebase authentication first
+      if (!useFallbackAuth) {
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          return;
+        } catch (firebaseError: any) {
+          console.warn('Firebase auth failed, switching to fallback:', firebaseError);
+
+          // If it's a network error, switch to fallback mode
+          if (firebaseError.code === 'auth/network-request-failed') {
+            setUseFallbackAuth(true);
+            console.log('Switching to fallback authentication mode');
+          } else {
+            // Re-throw non-network errors
+            throw firebaseError;
+          }
+        }
+      }
+
+      // Use fallback authentication
+      const fallbackUser = await fallbackAuth.signIn(email, password);
+
+      // Convert fallback user to Firebase-like user for compatibility
+      const mockUser: any = {
+        uid: fallbackUser.uid,
+        email: fallbackUser.email,
+        displayName: fallbackUser.displayName,
+        photoURL: null,
+        emailVerified: true
+      };
+
+      setUser(mockUser);
+
+      // Get fallback user profile
+      const profile = fallbackAuth.getUserProfile(fallbackUser.uid);
+      if (profile) {
+        setUserProfile(profile as any);
+      }
+
     } catch (error: any) {
       console.error('Sign in error:', error);
 
       // Provide more user-friendly error messages
       if (error.code === 'auth/network-request-failed') {
         throw new Error('Network connection failed. Please check your internet connection and try again.');
-      } else if (error.code === 'auth/user-not-found') {
-        throw new Error('No account found with this email address.');
+      } else if (error.code === 'auth/user-not-found' || error.message === 'Invalid email or password') {
+        throw new Error('No account found with this email address or incorrect password.');
       } else if (error.code === 'auth/wrong-password') {
         throw new Error('Incorrect password. Please try again.');
       } else if (error.code === 'auth/invalid-email') {
