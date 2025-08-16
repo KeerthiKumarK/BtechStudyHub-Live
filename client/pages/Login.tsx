@@ -307,6 +307,18 @@ export default function Login() {
               </Button>
             </form>
 
+            {/* Demo Credentials Button */}
+            <Button
+              variant="outline"
+              onClick={() => {
+                setFormData({ email: 'demo@example.com', password: 'demo123' });
+              }}
+              disabled={isLoading}
+              className="w-full border-dashed"
+            >
+              Use Demo Credentials
+            </Button>
+
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-border" />
