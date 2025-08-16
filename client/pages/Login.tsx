@@ -93,10 +93,12 @@ export default function Login() {
       setTimeout(() => navigate('/'), 1500);
     } catch (error: any) {
       console.error('Login error:', error);
-      setErrors({ 
-        general: error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' 
-          ? "Invalid email or password. Please try again." 
-          : "An error occurred. Please try again."
+      setErrors({
+        general: error.message || (
+          error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password'
+            ? "Invalid email or password. Please try again."
+            : "An error occurred. Please try again."
+        )
       });
     } finally {
       setIsLoading(false);
