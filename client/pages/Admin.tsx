@@ -140,8 +140,6 @@ export default function Admin() {
     }
   }, [user]);
 
-  const { signIn } = useFirebase();
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
