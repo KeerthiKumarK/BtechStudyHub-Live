@@ -283,23 +283,61 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         throw new Error('No internet connection. Please check your network and try again.');
       }
 
-      const result = await createUserWithEmailAndPassword(auth, email, password);
+      // Try Firebase authentication first
+      if (!useFallbackAuth) {
+        try {
+          const result = await createUserWithEmailAndPassword(auth, email, password);
 
-      // Update display name
-      await updateProfile(result.user, {
-        displayName: `${additionalInfo.firstName} ${additionalInfo.lastName}`
-      });
+          // Update display name
+          await updateProfile(result.user, {
+            displayName: `${additionalInfo.firstName} ${additionalInfo.lastName}`
+          });
 
-      // Create user profile in database
-      const userProfile = createSafeUserProfile(result.user, additionalInfo);
-      await set(ref(database, `users/${result.user.uid}`), userProfile);
+          // Create user profile in database
+          const userProfile = createSafeUserProfile(result.user, additionalInfo);
+          await set(ref(database, `users/${result.user.uid}`), userProfile);
+          return;
+        } catch (firebaseError: any) {
+          console.warn('Firebase signup failed, switching to fallback:', firebaseError);
+
+          // If it's a network error, switch to fallback mode
+          if (firebaseError.code === 'auth/network-request-failed') {
+            setUseFallbackAuth(true);
+            console.log('Switching to fallback authentication mode for signup');
+          } else {
+            // Re-throw non-network errors
+            throw firebaseError;
+          }
+        }
+      }
+
+      // Use fallback authentication
+      const fallbackUser = await fallbackAuth.signUp(email, password, additionalInfo);
+
+      // Convert fallback user to Firebase-like user for compatibility
+      const mockUser: any = {
+        uid: fallbackUser.uid,
+        email: fallbackUser.email,
+        displayName: fallbackUser.displayName,
+        photoURL: null,
+        emailVerified: true
+      };
+
+      setUser(mockUser);
+
+      // Get fallback user profile
+      const profile = fallbackAuth.getUserProfile(fallbackUser.uid);
+      if (profile) {
+        setUserProfile(profile as any);
+      }
+
     } catch (error: any) {
       console.error('Sign up error:', error);
 
       // Provide more user-friendly error messages
       if (error.code === 'auth/network-request-failed') {
         throw new Error('Network connection failed. Please check your internet connection and try again.');
-      } else if (error.code === 'auth/email-already-in-use') {
+      } else if (error.code === 'auth/email-already-in-use' || error.message === 'User already exists') {
         throw new Error('An account with this email already exists.');
       } else if (error.code === 'auth/weak-password') {
         throw new Error('Password should be at least 6 characters long.');
