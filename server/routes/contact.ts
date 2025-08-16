@@ -11,13 +11,39 @@ export interface ContactSubmission {
   status: 'pending' | 'responded' | 'closed';
 }
 
-// Email configuration
+// Email configuration with multiple fallback options
 const createEmailTransporter = () => {
+  // Try Gmail first if credentials are available
+  if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    return nodemailer.createTransporter({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+  }
+
+  // Fallback to a more general SMTP configuration
+  if (process.env.SMTP_HOST) {
+    return nodemailer.createTransporter({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+      }
+    });
+  }
+
+  // Development fallback - use ethereal email for testing
   return nodemailer.createTransporter({
-    service: 'gmail',
+    host: 'smtp.ethereal.email',
+    port: 587,
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
+      user: 'ethereal.user@ethereal.email',
+      pass: 'ethereal.pass'
     }
   });
 };
