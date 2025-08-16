@@ -43,6 +43,33 @@ export const database = getDatabase(app);
 export const storage = getStorage(app);
 export const firestore = getFirestore(app);
 
+// Test Firebase connection
+export const testFirebaseConnection = async () => {
+  try {
+    // Simple connectivity test
+    const testRef = ref(database, '.info/connected');
+    return new Promise((resolve, reject) => {
+      const unsubscribe = onValue(testRef, (snapshot) => {
+        unsubscribe();
+        if (snapshot.val() === true) {
+          console.log('Firebase connection test successful');
+          resolve(true);
+        } else {
+          console.warn('Firebase connection test failed - not connected');
+          reject(new Error('Firebase connection test failed'));
+        }
+      }, (error) => {
+        unsubscribe();
+        console.error('Firebase connection test error:', error);
+        reject(error);
+      });
+    });
+  } catch (error) {
+    console.error('Firebase connection test failed:', error);
+    throw error;
+  }
+};
+
 // For development: Connect to Firebase emulators if running locally
 // Uncomment these lines if you want to use Firebase emulators in development
 /*
