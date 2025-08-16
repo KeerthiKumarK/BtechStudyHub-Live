@@ -234,8 +234,13 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const signUp = async (email: string, password: string, additionalInfo: any) => {
     try {
+      // Check if we're online
+      if (!navigator.onLine) {
+        throw new Error('No internet connection. Please check your network and try again.');
+      }
+
       const result = await createUserWithEmailAndPassword(auth, email, password);
-      
+
       // Update display name
       await updateProfile(result.user, {
         displayName: `${additionalInfo.firstName} ${additionalInfo.lastName}`
@@ -244,8 +249,20 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       // Create user profile in database
       const userProfile = createSafeUserProfile(result.user, additionalInfo);
       await set(ref(database, `users/${result.user.uid}`), userProfile);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Sign up error:', error);
+
+      // Provide more user-friendly error messages
+      if (error.code === 'auth/network-request-failed') {
+        throw new Error('Network connection failed. Please check your internet connection and try again.');
+      } else if (error.code === 'auth/email-already-in-use') {
+        throw new Error('An account with this email already exists.');
+      } else if (error.code === 'auth/weak-password') {
+        throw new Error('Password should be at least 6 characters long.');
+      } else if (error.code === 'auth/invalid-email') {
+        throw new Error('Invalid email address format.');
+      }
+
       throw error;
     }
   };
