@@ -152,11 +152,15 @@ export default function Layout({ children }: LayoutProps) {
               {user ? (
                 <>
                   <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-gradient-education rounded-full flex items-center justify-center">
-                      <span className="text-xs text-white font-semibold">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage
+                        src={userProfile?.profileImageURL || userProfile?.photoURL}
+                        alt={userProfile?.displayName || 'User'}
+                      />
+                      <AvatarFallback className="bg-gradient-education text-white text-xs font-semibold">
                         {userProfile?.displayName?.split(' ').map(n => n[0]).join('') || 'U'}
-                      </span>
-                    </div>
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="text-sm">
                       <p className="font-medium text-foreground">{userProfile?.displayName || 'User'}</p>
                       <p className="text-xs text-muted-foreground">{userProfile?.college}</p>
