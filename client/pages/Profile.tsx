@@ -29,6 +29,7 @@ const Profile: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [profileImageKey, setProfileImageKey] = useState(Date.now());
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Form state
