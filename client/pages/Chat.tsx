@@ -238,14 +238,86 @@ export default function Chat() {
                           </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4">
-                          <Button className="w-full" variant="outline">
+                          <Button
+                            className="w-full"
+                            variant="outline"
+                            onClick={() => setShowCreateGroup(true)}
+                          >
                             <UserPlus className="w-4 h-4 mr-2" />
-                            Create New Room
+                            Create Group
                           </Button>
                           <Button className="w-full" variant="outline">
                             <Users className="w-4 h-4 mr-2" />
                             Manage Members
                           </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+
+                    {/* Create Group Dialog */}
+                    <Dialog open={showCreateGroup} onOpenChange={setShowCreateGroup}>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Create New Group</DialogTitle>
+                          <DialogDescription>
+                            Create a new study group for your college or subject.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="groupName">Group Name *</Label>
+                            <Input
+                              id="groupName"
+                              placeholder="e.g. Computer Science 2024"
+                              value={groupFormData.name}
+                              onChange={(e) => setGroupFormData({...groupFormData, name: e.target.value})}
+                              className="mt-1"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="groupDescription">Description *</Label>
+                            <Input
+                              id="groupDescription"
+                              placeholder="Brief description of the group"
+                              value={groupFormData.description}
+                              onChange={(e) => setGroupFormData({...groupFormData, description: e.target.value})}
+                              className="mt-1"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="groupType">Group Type</Label>
+                            <Select
+                              value={groupFormData.type}
+                              onValueChange={(value: "general" | "year" | "subject") =>
+                                setGroupFormData({...groupFormData, type: value})
+                              }
+                            >
+                              <SelectTrigger className="mt-1">
+                                <SelectValue placeholder="Select group type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="general">General Discussion</SelectItem>
+                                <SelectItem value="year">Year-based Group</SelectItem>
+                                <SelectItem value="subject">Subject-specific</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="flex space-x-2">
+                            <Button
+                              onClick={handleCreateGroup}
+                              disabled={!groupFormData.name.trim() || !groupFormData.description.trim()}
+                              className="flex-1"
+                            >
+                              Create Group
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => setShowCreateGroup(false)}
+                              className="flex-1"
+                            >
+                              Cancel
+                            </Button>
+                          </div>
                         </div>
                       </DialogContent>
                     </Dialog>
