@@ -307,7 +307,7 @@ export default function Chat() {
     "😊",
     "😂",
     "❤️",
-    "👍",
+    "���",
     "👎",
     "🎉",
     "🔥",
@@ -579,7 +579,7 @@ export default function Chat() {
                             {selectedRoom.name}
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            {selectedRoom.memberCount} members
+                            {selectedRoom.memberCount || 0} members
                           </p>
                         </div>
                       </div>
