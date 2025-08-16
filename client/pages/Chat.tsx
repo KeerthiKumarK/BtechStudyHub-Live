@@ -122,12 +122,28 @@ export default function Chat() {
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedRoom) return;
 
+    // Check if user has joined the room
+    if (!joinedRooms.includes(selectedRoom.id)) {
+      alert('Please join the room first before sending messages.');
+      return;
+    }
+
     try {
       await sendMessage(selectedRoom.id, newMessage);
       setNewMessage("");
     } catch (error) {
       console.error('Error sending message:', error);
     }
+  };
+
+  const handleJoinRoom = (roomId: string) => {
+    if (!joinedRooms.includes(roomId)) {
+      setJoinedRooms(prev => [...prev, roomId]);
+    }
+  };
+
+  const handleLeaveRoom = (roomId: string) => {
+    setJoinedRooms(prev => prev.filter(id => id !== roomId));
   };
 
   const handleEditMessage = async (messageId: string, newContent: string) => {
