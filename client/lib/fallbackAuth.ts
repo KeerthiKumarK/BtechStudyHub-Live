@@ -77,8 +77,11 @@ class FallbackAuthSystem {
   private createAdminUser() {
     // Don't create admin user if it already exists
     if (this.users.has("kolakeerthikumar@gmail.com")) {
+      console.log("Fallback auth: Admin user already exists");
       return;
     }
+
+    console.log("Fallback auth: Creating admin user");
 
     const adminUser: FallbackUser = {
       uid: "admin-user-001",
