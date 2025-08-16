@@ -39,6 +39,7 @@ const navigationItems = [
   { path: "/mcqs", label: "MCQs", icon: HelpCircle },
   { path: "/internships", label: "Internships", icon: Briefcase },
   { path: "/community", label: "Community", icon: Users },
+  { path: "/games", label: "Games", icon: Gamepad2 },
   { path: "/portfolio", label: "Portfolio", icon: FileText },
 ];
 
