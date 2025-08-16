@@ -135,18 +135,27 @@ export default function Admin() {
     // Check if current user is admin
     if (user?.email === ADMIN_EMAIL) {
       setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
     }
   }, [user]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
 
+    // For admin access, we'll check credentials and navigate to sign in
     if (
       loginData.email === ADMIN_EMAIL &&
       loginData.password === ADMIN_PASSWORD
     ) {
-      setIsAuthenticated(true);
+      // If user is already logged in with admin email, grant access
+      if (user?.email === ADMIN_EMAIL) {
+        setIsAuthenticated(true);
+      } else {
+        // Otherwise, redirect to login page with admin credentials hint
+        navigate('/login?admin=true');
+      }
     } else {
       setLoginError("Invalid admin credentials");
     }
@@ -205,6 +214,11 @@ export default function Admin() {
               <p className="text-muted-foreground">
                 Please enter admin credentials to continue
               </p>
+              <div className="mt-4 p-3 bg-muted rounded-lg text-sm">
+                <p className="font-medium mb-1">Admin Credentials:</p>
+                <p>Email: kolakeerthikumar@gmail.com</p>
+                <p>Password: Keerthi@28</p>
+              </div>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-4">
