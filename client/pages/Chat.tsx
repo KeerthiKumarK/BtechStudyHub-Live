@@ -55,6 +55,8 @@ export default function Chat() {
     deleteMessage,
     subscribeToMessages,
     subscribeToRooms,
+    joinRoom,
+    leaveRoom,
   } = useFirebase();
 
   const [selectedRoom, setSelectedRoom] = useState<ChatRoom | null>(null);
@@ -68,6 +70,9 @@ export default function Chat() {
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [joinedRooms, setJoinedRooms] = useState<string[]>([]);
+  const [roomMembers, setRoomMembers] = useState<{[roomId: string]: any[]}>({});
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [groupFormData, setGroupFormData] = useState({
     name: "",
     description: "",
@@ -136,7 +141,7 @@ export default function Chat() {
   }
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !selectedRoom) return;
+    if ((!newMessage.trim() && !selectedFile) || !selectedRoom) return;
 
     // Check if user has joined the room
     if (!joinedRooms.includes(selectedRoom.id)) {
@@ -145,21 +150,38 @@ export default function Chat() {
     }
 
     try {
-      await sendMessage(selectedRoom.id, newMessage);
+      setIsUploading(true);
+      await sendMessage(selectedRoom.id, newMessage || (selectedFile ? `[File: ${selectedFile.name}]` : ""), selectedFile || undefined);
       setNewMessage("");
+      setSelectedFile(null);
     } catch (error) {
       console.error("Error sending message:", error);
+      alert("Failed to send message. Please try again.");
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  const handleJoinRoom = (roomId: string) => {
+  const handleJoinRoom = async (roomId: string) => {
     if (!joinedRooms.includes(roomId)) {
-      setJoinedRooms((prev) => [...prev, roomId]);
+      try {
+        await joinRoom(roomId);
+        setJoinedRooms((prev) => [...prev, roomId]);
+      } catch (error) {
+        console.error("Error joining room:", error);
+        alert("Failed to join room. Please try again.");
+      }
     }
   };
 
-  const handleLeaveRoom = (roomId: string) => {
-    setJoinedRooms((prev) => prev.filter((id) => id !== roomId));
+  const handleLeaveRoom = async (roomId: string) => {
+    try {
+      await leaveRoom(roomId);
+      setJoinedRooms((prev) => prev.filter((id) => id !== roomId));
+    } catch (error) {
+      console.error("Error leaving room:", error);
+      alert("Failed to leave room. Please try again.");
+    }
   };
 
   const handleEditMessage = async (messageId: string, newContent: string) => {
@@ -263,9 +285,20 @@ export default function Chat() {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // For now, just show file name in message
-      // In a real implementation, you would upload the file
-      setNewMessage((prev) => prev + ` [File: ${file.name}]`);
+      // Check file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert("File size must be less than 10MB");
+        return;
+      }
+
+      // Check file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!allowedTypes.includes(file.type)) {
+        alert("Only images (JPEG, PNG, GIF) and documents (PDF, DOC, DOCX) are allowed");
+        return;
+      }
+
+      setSelectedFile(file);
     }
   };
 
@@ -597,9 +630,17 @@ export default function Chat() {
                             <div className="flex items-end space-x-2 group">
                               {message.userId !== user.uid && (
                                 <Avatar className="w-8 h-8">
-                                  <AvatarImage src={message.avatar} />
+                                  <AvatarImage src={message.avatar || undefined} />
                                   <AvatarFallback className="text-xs bg-gradient-education text-white">
                                     {getInitials(message.username)}
+                                  </AvatarFallback>
+                                </Avatar>
+                              )}
+                              {message.userId === user.uid && (
+                                <Avatar className="w-8 h-8">
+                                  <AvatarImage src={userProfile?.profileImageURL || undefined} />
+                                  <AvatarFallback className="text-xs bg-gradient-education text-white">
+                                    {getInitials(userProfile?.displayName || "U")}
                                   </AvatarFallback>
                                 </Avatar>
                               )}
@@ -664,6 +705,40 @@ export default function Chat() {
                                       <p className="text-sm">
                                         {message.content}
                                       </p>
+
+                                      {/* File Attachment Display */}
+                                      {message.fileAttachment && (
+                                        <div className="mt-2">
+                                          {message.fileAttachment.type.startsWith('image/') ? (
+                                            <img
+                                              src={message.fileAttachment.url}
+                                              alt={message.fileAttachment.name}
+                                              className="max-w-xs max-h-48 rounded-lg cursor-pointer"
+                                              onClick={() => window.open(message.fileAttachment!.url, '_blank')}
+                                            />
+                                          ) : (
+                                            <div className="border rounded p-2 bg-background">
+                                              <div className="flex items-center space-x-2">
+                                                <Paperclip className="w-4 h-4" />
+                                                <div className="flex-1">
+                                                  <p className="text-sm font-medium">{message.fileAttachment.name}</p>
+                                                  <p className="text-xs text-muted-foreground">
+                                                    {(message.fileAttachment.size / 1024 / 1024).toFixed(2)} MB
+                                                  </p>
+                                                </div>
+                                                <Button
+                                                  size="sm"
+                                                  variant="outline"
+                                                  onClick={() => window.open(message.fileAttachment!.url, '_blank')}
+                                                >
+                                                  View
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+
                                       {message.edited && (
                                         <p className="text-xs opacity-70 mt-1">
                                           edited {formatTime(message.editedAt!)}
