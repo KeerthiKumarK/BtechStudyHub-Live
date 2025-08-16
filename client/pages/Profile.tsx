@@ -58,6 +58,8 @@ const Profile: React.FC = () => {
         linkedIn: userProfile.linkedIn || '',
         github: userProfile.github || ''
       });
+      // Update profile image key when userProfile changes to force re-render
+      setProfileImageKey(Date.now());
     }
   }, [userProfile]);
 
