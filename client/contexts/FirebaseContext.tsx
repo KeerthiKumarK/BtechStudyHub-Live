@@ -94,6 +94,8 @@ interface FirebaseContextType {
   user: User | null;
   userProfile: UserProfile | null;
   loading: boolean;
+  isOnline: boolean;
+  firebaseConnected: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, additionalInfo: any) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
