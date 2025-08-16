@@ -51,10 +51,13 @@ const validatePassword = (password: string): string | undefined => {
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { signIn, signInWithGoogle, signInWithGithub, user } = useFirebase();
+  const isAdminLogin = searchParams.get('admin') === 'true';
+
   const [formData, setFormData] = useState<FormData>({
-    email: "",
-    password: "",
+    email: isAdminLogin ? "kolakeerthikumar@gmail.com" : "",
+    password: isAdminLogin ? "Keerthi@28" : "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
