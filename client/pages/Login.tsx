@@ -1,22 +1,28 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useFirebase } from "@/contexts/FirebaseContext";
-import { 
-  Eye, 
-  EyeOff, 
-  GraduationCap, 
-  Mail, 
-  Lock, 
+import {
+  Eye,
+  EyeOff,
+  GraduationCap,
+  Mail,
+  Lock,
   ArrowRight,
   CheckCircle,
   AlertCircle,
   Github,
-  Chrome
+  Chrome,
 } from "lucide-react";
 
 interface FormData {
@@ -32,7 +38,8 @@ interface FormErrors {
 
 const validateEmail = (email: string): string | undefined => {
   if (!email) return "Email is required";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Please enter a valid email address";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    return "Please enter a valid email address";
   return undefined;
 };
 
@@ -47,7 +54,7 @@ export default function Login() {
   const { signIn, signInWithGoogle, signInWithGithub, user } = useFirebase();
   const [formData, setFormData] = useState<FormData>({
     email: "",
-    password: ""
+    password: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
@@ -57,31 +64,31 @@ export default function Login() {
   // Redirect if already logged in
   useEffect(() => {
     if (user && !isLoading) {
-      navigate('/');
+      navigate("/");
     }
   }, [user, isLoading, navigate]);
 
   const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    
+
     newErrors.email = validateEmail(formData.email);
     newErrors.password = validatePassword(formData.password);
 
     setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error !== undefined);
+    return !Object.values(newErrors).some((error) => error !== undefined);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsLoading(true);
@@ -90,37 +97,46 @@ export default function Login() {
     try {
       await signIn(formData.email, formData.password);
       setIsSuccess(true);
-      setTimeout(() => navigate('/'), 1500);
+      setTimeout(() => navigate("/"), 1500);
     } catch (error: any) {
-      console.error('Login error:', error);
-      setErrors({ 
-        general: error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' 
-          ? "Invalid email or password. Please try again." 
-          : "An error occurred. Please try again."
+      console.error("Login error:", error);
+      setErrors({
+        general:
+          error.message ||
+          (error.code === "auth/user-not-found" ||
+          error.code === "auth/wrong-password"
+            ? "Invalid email or password. Please try again."
+            : "An error occurred. Please try again."),
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'github') => {
+  const handleSocialLogin = async (provider: "google" | "github") => {
     setIsLoading(true);
     setErrors({});
 
     try {
-      if (provider === 'google') {
+      if (provider === "google") {
         await signInWithGoogle();
       } else {
         await signInWithGithub();
       }
       setIsSuccess(true);
-      setTimeout(() => navigate('/'), 1500);
+      setTimeout(() => navigate("/"), 1500);
     } catch (error: any) {
-      console.error('Social login error:', error);
-      if (error.message && error.message.includes('not available in this environment')) {
+      console.error("Social login error:", error);
+      if (
+        error.message &&
+        error.message.includes("not available in this environment")
+      ) {
         setErrors({ general: error.message });
       } else {
-        setErrors({ general: "Social login failed. Please try again or use email/password login." });
+        setErrors({
+          general:
+            "Social login failed. Please try again or use email/password login.",
+        });
       }
     } finally {
       setIsLoading(false);
@@ -136,11 +152,16 @@ export default function Login() {
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
-              <h2 className="text-2xl font-bold text-foreground">Welcome Back!</h2>
+              <h2 className="text-2xl font-bold text-foreground">
+                Welcome Back!
+              </h2>
               <p className="text-muted-foreground">
                 You have successfully logged into BTech Study Hub.
               </p>
-              <Button asChild className="w-full bg-gradient-education text-white">
+              <Button
+                asChild
+                className="w-full bg-gradient-education text-white"
+              >
                 <Link to="/">
                   Continue to Dashboard
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -164,13 +185,14 @@ export default function Login() {
             </div>
             <span className="text-2xl font-bold">BTech Study Hub</span>
           </div>
-          
+
           <div className="space-y-6">
             <h1 className="text-4xl font-bold leading-tight">
               Welcome Back to Your Learning Journey
             </h1>
             <p className="text-xl text-blue-100">
-              Continue mastering engineering concepts with our comprehensive study platform
+              Continue mastering engineering concepts with our comprehensive
+              study platform
             </p>
           </div>
 
@@ -201,7 +223,9 @@ export default function Login() {
               </div>
               <span className="text-xl font-bold">BTech Study Hub</span>
             </div>
-            <CardTitle className="text-2xl font-bold text-foreground">Sign In</CardTitle>
+            <CardTitle className="text-2xl font-bold text-foreground">
+              Sign In
+            </CardTitle>
             <CardDescription className="text-muted-foreground">
               Enter your credentials to access your account
             </CardDescription>
@@ -213,7 +237,9 @@ export default function Login() {
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
                   {errors.general}
-                  {errors.general.includes('not available in this environment') && (
+                  {errors.general.includes(
+                    "not available in this environment",
+                  ) && (
                     <div className="mt-2">
                       <Link
                         to="/firebase-config"
@@ -256,7 +282,9 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     value={formData.password}
-                    onChange={(e) => handleInputChange("password", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
                     className={`pl-10 pr-10 ${errors.password ? "border-destructive" : ""}`}
                     disabled={isLoading}
                   />
@@ -265,7 +293,11 @@ export default function Login() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
                 {errors.password && (
@@ -276,10 +308,12 @@ export default function Login() {
               <div className="flex items-center justify-between">
                 <label className="flex items-center space-x-2">
                   <input type="checkbox" className="rounded border-border" />
-                  <span className="text-sm text-muted-foreground">Remember me</span>
+                  <span className="text-sm text-muted-foreground">
+                    Remember me
+                  </span>
                 </label>
-                <Link 
-                  to="/forgot-password" 
+                <Link
+                  to="/forgot-password"
                   className="text-sm text-primary hover:underline"
                 >
                   Forgot password?
@@ -305,12 +339,26 @@ export default function Login() {
               </Button>
             </form>
 
+            {/* Demo Credentials Button */}
+            <Button
+              variant="outline"
+              onClick={() => {
+                setFormData({ email: "demo@example.com", password: "demo123" });
+              }}
+              disabled={isLoading}
+              className="w-full border-dashed"
+            >
+              Use Demo Credentials
+            </Button>
+
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with
+                </span>
               </div>
             </div>
 
@@ -318,7 +366,7 @@ export default function Login() {
               <div className="grid grid-cols-2 gap-3">
                 <Button
                   variant="outline"
-                  onClick={() => handleSocialLogin('google')}
+                  onClick={() => handleSocialLogin("google")}
                   disabled={isLoading}
                 >
                   <Chrome className="w-4 h-4 mr-2" />
@@ -326,7 +374,7 @@ export default function Login() {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => handleSocialLogin('github')}
+                  onClick={() => handleSocialLogin("github")}
                   disabled={isLoading}
                 >
                   <Github className="w-4 h-4 mr-2" />
@@ -335,7 +383,10 @@ export default function Login() {
               </div>
               <p className="text-xs text-muted-foreground text-center">
                 Social login may require additional setup.{" "}
-                <Link to="/firebase-config" className="text-primary hover:underline">
+                <Link
+                  to="/firebase-config"
+                  className="text-primary hover:underline"
+                >
                   Setup instructions
                 </Link>
               </p>
@@ -343,7 +394,10 @@ export default function Login() {
 
             <div className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
-              <Link to="/signup" className="text-primary hover:underline font-medium">
+              <Link
+                to="/signup"
+                className="text-primary hover:underline font-medium"
+              >
                 Sign up here
               </Link>
             </div>

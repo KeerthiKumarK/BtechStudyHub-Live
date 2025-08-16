@@ -22,6 +22,9 @@ import Community from "./pages/Community";
 import Freelancing from "./pages/Freelancing";
 import Feedback from "./pages/Feedback";
 import Profile from "./pages/Profile";
+import Portfolio from "./pages/Portfolio";
+import Games from "./pages/Games";
+import Admin from "./pages/Admin";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
@@ -50,6 +53,9 @@ const App = () => (
           <Route path="/freelancing" element={<Freelancing />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/games" element={<Games />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
