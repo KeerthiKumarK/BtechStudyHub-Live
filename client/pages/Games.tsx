@@ -239,11 +239,11 @@ export default function Games() {
                       <div className="text-3xl">♔</div>
                       <div>
                         <CardTitle className="text-2xl">Chess Game</CardTitle>
-                        <p className="text-muted-foreground">
+                        <div className="text-muted-foreground">
                           Current Player: <Badge variant={currentPlayer === 'white' ? 'default' : 'secondary'}>
                             {currentPlayer === 'white' ? 'White' : 'Black'}
                           </Badge>
-                        </p>
+                        </div>
                       </div>
                     </div>
                     <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
