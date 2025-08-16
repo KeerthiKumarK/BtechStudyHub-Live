@@ -266,7 +266,7 @@ export default function Chat() {
     <Layout>
       <div className="container mx-auto px-4 py-4">
         <div className="h-[calc(100vh-8rem)] bg-background rounded-lg border border-border overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-4 h-full relative">
+          <div className="grid grid-cols-1 lg:grid-cols-4 h-full relative max-w-full">
             
             {/* Sidebar - Chat Rooms */}
             <div className={`lg:col-span-1 border-r border-border bg-muted/30 ${
