@@ -4,6 +4,7 @@ import { useFirebase } from "@/contexts/FirebaseContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import WelcomeMessage from "./WelcomeMessage";
+import ConnectionStatus from "./ConnectionStatus";
 import {
   BookOpen,
   HelpCircle,
