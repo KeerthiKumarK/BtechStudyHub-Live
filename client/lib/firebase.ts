@@ -4,13 +4,15 @@ import { getDatabase, connectDatabaseEmulator, ref, onValue } from 'firebase/dat
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 
+// Use environment variables if available, otherwise fall back to default config
 const firebaseConfig = {
-  apiKey: "AIzaSyAPrU7_F5U0kDqosgI0eVU8VWsPdXQLDug",
-  authDomain: "btechstudyhub-5c16d.firebaseapp.com",
-  projectId: "btechstudyhub-5c16d",
-  storageBucket: "btechstudyhub-5c16d.firebasestorage.app",
-  messagingSenderId: "512504024293",
-  appId: "1:512504024293:web:02636f482be10065d8580c"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyAPrU7_F5U0kDqosgI0eVU8VWsPdXQLDug",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "btechstudyhub-5c16d.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "btechstudyhub-5c16d",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "btechstudyhub-5c16d.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "512504024293",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:512504024293:web:02636f482be10065d8580c",
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || "https://btechstudyhub-5c16d-default-rtdb.firebaseio.com/"
 };
 
 // Validate Firebase configuration
