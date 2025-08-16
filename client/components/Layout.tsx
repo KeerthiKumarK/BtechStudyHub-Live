@@ -38,6 +38,7 @@ const navigationItems = [
   { path: "/mcqs", label: "MCQs", icon: HelpCircle },
   { path: "/internships", label: "Internships", icon: Briefcase },
   { path: "/community", label: "Community", icon: Users },
+  { path: "/portfolio", label: "Portfolio", icon: FileText },
 ];
 
 const secondaryItems = [
