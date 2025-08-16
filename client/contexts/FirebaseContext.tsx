@@ -204,9 +204,30 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Auth functions
   const signIn = async (email: string, password: string) => {
     try {
+      // Check if we're online
+      if (!navigator.onLine) {
+        throw new Error('No internet connection. Please check your network and try again.');
+      }
+
       await signInWithEmailAndPassword(auth, email, password);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Sign in error:', error);
+
+      // Provide more user-friendly error messages
+      if (error.code === 'auth/network-request-failed') {
+        throw new Error('Network connection failed. Please check your internet connection and try again.');
+      } else if (error.code === 'auth/user-not-found') {
+        throw new Error('No account found with this email address.');
+      } else if (error.code === 'auth/wrong-password') {
+        throw new Error('Incorrect password. Please try again.');
+      } else if (error.code === 'auth/invalid-email') {
+        throw new Error('Invalid email address format.');
+      } else if (error.code === 'auth/user-disabled') {
+        throw new Error('This account has been disabled.');
+      } else if (error.code === 'auth/too-many-requests') {
+        throw new Error('Too many failed attempts. Please try again later.');
+      }
+
       throw error;
     }
   };
