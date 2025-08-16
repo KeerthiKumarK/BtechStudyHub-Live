@@ -52,6 +52,12 @@ export default function Chat() {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
   const [showRoomList, setShowRoomList] = useState(false);
+  const [showCreateGroup, setShowCreateGroup] = useState(false);
+  const [groupFormData, setGroupFormData] = useState({
+    name: "",
+    description: "",
+    type: "general" as "general" | "year" | "subject"
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
