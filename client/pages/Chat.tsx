@@ -54,6 +54,7 @@ export default function Chat() {
   const [showRoomList, setShowRoomList] = useState(false);
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [joinedRooms, setJoinedRooms] = useState<string[]>([]);
   const [groupFormData, setGroupFormData] = useState({
     name: "",
     description: "",
