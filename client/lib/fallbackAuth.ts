@@ -121,8 +121,17 @@ class FallbackAuthSystem {
   }
 
   async signIn(email: string, password: string): Promise<FallbackUser> {
+    console.log("Fallback auth: Attempting sign in for:", email);
+    console.log("Fallback auth: Available users:", Array.from(this.users.keys()));
+
     const userData = this.users.get(email);
-    if (!userData || userData.password !== password) {
+    if (!userData) {
+      console.error("Fallback auth: User not found:", email);
+      throw new Error("Invalid email or password");
+    }
+
+    if (userData.password !== password) {
+      console.error("Fallback auth: Invalid password for user:", email);
       throw new Error("Invalid email or password");
     }
 
