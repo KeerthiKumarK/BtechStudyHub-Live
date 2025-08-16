@@ -486,6 +486,30 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     console.log('Freelancing form submitted:', submission);
   };
 
+  // Network status monitoring
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Firebase connection monitoring
+  useEffect(() => {
+    const connectedRef = ref(database, '.info/connected');
+    const unsubscribe = onValue(connectedRef, (snapshot) => {
+      setFirebaseConnected(snapshot.val() === true);
+    });
+
+    return unsubscribe;
+  }, []);
+
   // Auth state listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
