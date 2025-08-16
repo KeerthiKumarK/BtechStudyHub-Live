@@ -270,11 +270,15 @@ export default function Layout({ children }: LayoutProps) {
                 {user ? (
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 px-3 py-2">
-                      <div className="w-10 h-10 bg-gradient-education rounded-full flex items-center justify-center">
-                        <span className="text-sm text-white font-semibold">
+                      <Avatar className="w-10 h-10">
+                        <AvatarImage
+                          src={userProfile?.profileImageURL || userProfile?.photoURL}
+                          alt={userProfile?.displayName || 'User'}
+                        />
+                        <AvatarFallback className="bg-gradient-education text-white text-sm font-semibold">
                           {userProfile?.displayName?.split(' ').map(n => n[0]).join('') || 'U'}
-                        </span>
-                      </div>
+                        </AvatarFallback>
+                      </Avatar>
                       <div>
                         <p className="font-medium text-foreground">{userProfile?.displayName || 'User'}</p>
                         <p className="text-xs text-muted-foreground">{userProfile?.college}</p>
