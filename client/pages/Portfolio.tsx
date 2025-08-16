@@ -403,7 +403,7 @@ export default function Portfolio() {
           </div>
 
           {/* Templates Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {filteredTemplates.map((template) => (
               <Card key={template.id} className={`group hover:shadow-lg transition-all duration-300 ${template.featured ? 'ring-2 ring-primary/20' : ''}`}>
                 <div className="relative">
