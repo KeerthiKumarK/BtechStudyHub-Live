@@ -235,6 +235,15 @@ export default function Login() {
           </CardHeader>
 
           <CardContent className="space-y-6">
+            {isAdminLogin && (
+              <Alert>
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Admin credentials have been pre-filled. Click "Sign In" to access the admin panel.
+                </AlertDescription>
+              </Alert>
+            )}
+
             {errors.general && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
