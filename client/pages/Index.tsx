@@ -4,14 +4,14 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  BookOpen, 
-  HelpCircle, 
-  FileText, 
-  Video, 
-  TrendingUp, 
-  MessageCircle, 
-  Users, 
+import {
+  BookOpen,
+  HelpCircle,
+  FileText,
+  Video,
+  TrendingUp,
+  MessageCircle,
+  Users,
   Briefcase,
   GraduationCap,
   Star,
@@ -24,7 +24,8 @@ import {
   Target,
   Zap,
   Globe,
-  Shield
+  Shield,
+  User
 } from "lucide-react";
 
 const features = [
