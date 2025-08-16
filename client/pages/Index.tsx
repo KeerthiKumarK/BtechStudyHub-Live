@@ -367,7 +367,7 @@ export default function Index() {
                 Get Started Free
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary" asChild>
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary bg-white/10 backdrop-blur" asChild>
               <Link to="/contact">
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Contact Us
