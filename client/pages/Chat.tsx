@@ -43,6 +43,7 @@ import {
   Video,
   BookOpen,
   X,
+  RefreshCw,
 } from "lucide-react";
 
 export default function Chat() {
