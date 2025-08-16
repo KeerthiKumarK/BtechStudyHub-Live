@@ -20,7 +20,8 @@ import {
   GraduationCap,
   Star,
   Sun,
-  Moon
+  Moon,
+  Gamepad2
 } from "lucide-react";
 
 interface LayoutProps {
