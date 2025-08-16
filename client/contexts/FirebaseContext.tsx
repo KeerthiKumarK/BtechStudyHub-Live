@@ -21,7 +21,13 @@ import {
   serverTimestamp,
   DatabaseReference,
 } from "firebase/database";
-import { auth, database } from "@/lib/firebase";
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
+import { auth, database, storage } from "@/lib/firebase";
 import { fallbackAuth, FallbackUser } from "@/lib/fallbackAuth";
 import {
   sanitizeFirebaseData,
@@ -41,6 +47,12 @@ export interface ChatMessage {
   edited?: boolean;
   editedAt?: number;
   roomId: string;
+  fileAttachment?: {
+    name: string;
+    url: string;
+    type: string;
+    size: number;
+  };
 }
 
 export interface FeedbackEntry {
@@ -71,6 +83,12 @@ export interface ChatRoom {
   description: string;
   type: "general" | "year" | "subject";
   memberCount: number;
+  members: { [userId: string]: {
+    userId: string;
+    username: string;
+    joinedAt: number;
+    isActive: boolean;
+  } };
   lastMessage?: ChatMessage;
   createdAt: number;
   createdBy: string;
@@ -92,6 +110,7 @@ export interface UserProfile {
   lastSeen: number;
   joinedAt: number;
   profileImageURL?: string;
+  profileImagePath?: string;
 }
 
 interface FirebaseContextType {
@@ -113,7 +132,9 @@ interface FirebaseContextType {
   logout: () => Promise<void>;
 
   // Chat
-  sendMessage: (roomId: string, content: string) => Promise<void>;
+  sendMessage: (roomId: string, content: string, fileAttachment?: File) => Promise<void>;
+  joinRoom: (roomId: string) => Promise<void>;
+  leaveRoom: (roomId: string) => Promise<void>;
   editMessage: (
     messageId: string,
     roomId: string,
@@ -230,7 +251,11 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({
     ];
 
     for (const room of defaultRooms) {
-      await set(ref(database, `chatRooms/${room.id}`), room);
+      const roomWithMembers = {
+        ...room,
+        members: {},
+      };
+      await set(ref(database, `chatRooms/${room.id}`), roomWithMembers);
     }
   };
 
@@ -462,16 +487,88 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   // Chat functions
-  const sendMessage = async (roomId: string, content: string) => {
+  const sendMessage = async (roomId: string, content: string, fileAttachment?: File) => {
     if (!user) throw new Error("User not authenticated");
 
-    const message = createSafeMessage(user, content, roomId);
+    let message = createSafeMessage(user, content, roomId);
+
+    // Add user avatar to message
+    if (userProfile?.profileImageURL) {
+      message.avatar = userProfile.profileImageURL;
+    }
+
+    // Handle file attachment if provided
+    if (fileAttachment) {
+      try {
+        const fileRef = storageRef(storage, `chat-files/${roomId}/${Date.now()}-${fileAttachment.name}`);
+        const snapshot = await uploadBytes(fileRef, fileAttachment);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        message.fileAttachment = {
+          name: fileAttachment.name,
+          url: downloadURL,
+          type: fileAttachment.type,
+          size: fileAttachment.size,
+        };
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        throw new Error("Failed to upload file");
+      }
+    }
+
     const messagesRef = ref(database, `messages/${roomId}`);
     await push(messagesRef, message);
 
     // Update room's last message
     const roomRef = ref(database, `chatRooms/${roomId}/lastMessage`);
     await set(roomRef, { ...message, id: "temp" });
+  };
+
+  const joinRoom = async (roomId: string) => {
+    if (!user || !userProfile) throw new Error("User not authenticated");
+
+    const memberRef = ref(database, `chatRooms/${roomId}/members/${user.uid}`);
+    await set(memberRef, {
+      userId: user.uid,
+      username: userProfile.displayName,
+      joinedAt: Date.now(),
+      isActive: true,
+    });
+
+    // Increment member count
+    const roomRef = ref(database, `chatRooms/${roomId}`);
+    const roomSnapshot = await new Promise<any>((resolve) => {
+      onValue(roomRef, (snapshot) => {
+        resolve(snapshot.val());
+      }, { onlyOnce: true });
+    });
+
+    if (roomSnapshot) {
+      await update(roomRef, {
+        memberCount: (roomSnapshot.memberCount || 0) + 1,
+      });
+    }
+  };
+
+  const leaveRoom = async (roomId: string) => {
+    if (!user) throw new Error("User not authenticated");
+
+    const memberRef = ref(database, `chatRooms/${roomId}/members/${user.uid}`);
+    await remove(memberRef);
+
+    // Decrement member count
+    const roomRef = ref(database, `chatRooms/${roomId}`);
+    const roomSnapshot = await new Promise<any>((resolve) => {
+      onValue(roomRef, (snapshot) => {
+        resolve(snapshot.val());
+      }, { onlyOnce: true });
+    });
+
+    if (roomSnapshot && roomSnapshot.memberCount > 0) {
+      await update(roomRef, {
+        memberCount: roomSnapshot.memberCount - 1,
+      });
+    }
   };
 
   const editMessage = async (
@@ -566,23 +663,38 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({
   const uploadProfileImage = async (file: File): Promise<string> => {
     if (!user) throw new Error("User not authenticated");
 
-    // Create a local URL for the uploaded file to display immediately
-    const localImageURL = URL.createObjectURL(file);
+    try {
+      // Create a reference to the storage location
+      const imageRef = storageRef(storage, `profile-images/${user.uid}/${Date.now()}-${file.name}`);
 
-    // For a real implementation, you would upload to Firebase Storage
-    // For now, we'll store the local URL and simulate the upload
-    const timestamp = Date.now();
+      // Upload the file
+      const snapshot = await uploadBytes(imageRef, file);
 
-    // Simulate upload delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
+      // Get the download URL
+      const downloadURL = await getDownloadURL(snapshot.ref);
 
-    // Update user profile with new image URL
-    await updateUserProfile({
-      profileImageURL: localImageURL,
-      lastImageUpdate: timestamp,
-    });
+      // Delete old profile image if it exists
+      if (userProfile?.profileImagePath) {
+        try {
+          const oldImageRef = storageRef(storage, userProfile.profileImagePath);
+          await deleteObject(oldImageRef);
+        } catch (error) {
+          console.warn("Could not delete old profile image:", error);
+        }
+      }
 
-    return localImageURL;
+      // Update user profile with new image URL and path
+      await updateUserProfile({
+        profileImageURL: downloadURL,
+        profileImagePath: snapshot.ref.fullPath,
+        lastImageUpdate: Date.now(),
+      });
+
+      return downloadURL;
+    } catch (error) {
+      console.error("Error uploading profile image:", error);
+      throw new Error("Failed to upload profile image");
+    }
   };
 
   // Feedback functions
@@ -771,6 +883,8 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({
     deleteMessage,
     subscribeToMessages,
     subscribeToRooms,
+    joinRoom,
+    leaveRoom,
     updateUserProfile,
     setUserOnlineStatus,
     uploadProfileImage,
