@@ -379,6 +379,9 @@ export default function Layout({ children }: LayoutProps) {
                 <Link to="/freelancing" className="block text-muted-foreground hover:text-foreground transition-colors">
                   Freelancing
                 </Link>
+                <Link to="/feedback" className="block text-muted-foreground hover:text-foreground transition-colors">
+                  Feedback
+                </Link>
                 <Link to="/about" className="block text-muted-foreground hover:text-foreground transition-colors">
                   About Us
                 </Link>
