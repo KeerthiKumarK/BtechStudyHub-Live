@@ -123,7 +123,7 @@ export default function Layout({ children }: LayoutProps) {
                 className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActivePath("/feedback")
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted dark:hover:bg-slate-800"
                 }`}
               >
                 <MessageCircle className="w-4 h-4" />
